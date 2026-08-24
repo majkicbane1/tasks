@@ -14,7 +14,7 @@ class SharedClientController extends Controller
 
         return view('shared.dashboard', [
             'client' => $client,
-            'workEntries' => $this->workEntries($client)->limit(20)->get(),
+            'workEntries' => $this->workEntries($client)->paginate(25),
             'payments' => $client->payments()->with('project')->where('visible_to_client', true)->latest('paid_on')->get(),
             'shareToken' => $token,
         ]);
@@ -38,7 +38,7 @@ class SharedClientController extends Controller
 
         $project->load([
             'client',
-            'workEntries' => fn ($query) => $query->where('visible_to_client', true)->orderBy('sort_order')->orderBy('id'),
+            'workEntries' => fn ($query) => $query->where('visible_to_client', true)->orderByDesc('sort_order')->orderByDesc('id'),
             'payments' => fn ($query) => $query->where('visible_to_client', true)->latest('paid_on'),
         ]);
 
@@ -55,7 +55,7 @@ class SharedClientController extends Controller
         return WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
             ->with('project')
             ->where('visible_to_client', true)
-            ->orderBy('sort_order')
-            ->orderBy('id');
+            ->orderByDesc('sort_order')
+            ->orderByDesc('id');
     }
 }

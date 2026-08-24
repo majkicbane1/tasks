@@ -32,7 +32,7 @@ class ProjectController extends Controller
 
     public function show(Request $request, Project $project)
     {
-        $project->load(['client', 'workEntries' => fn ($query) => $query->orderBy('sort_order')->orderBy('id'), 'payments' => fn ($query) => $query->latest('paid_on')]);
+        $project->load(['client', 'workEntries' => fn ($query) => $query->orderByDesc('sort_order')->orderByDesc('id'), 'payments' => fn ($query) => $query->latest('paid_on')]);
 
         if (! $request->user()->isSuperAdmin()) {
             $project->setRelation('workEntries', $project->workEntries->where('visible_to_client', true));

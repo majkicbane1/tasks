@@ -55,8 +55,8 @@ class ClientController extends Controller
         $client->load(['users']);
         $workEntries = WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
             ->with('project')
-            ->orderBy('sort_order')
-            ->orderBy('id')
+            ->orderByDesc('sort_order')
+            ->orderByDesc('id')
             ->get();
         $payments = $client->payments()->with('project')->latest('paid_on')->get();
 

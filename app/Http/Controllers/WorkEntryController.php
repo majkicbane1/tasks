@@ -67,9 +67,11 @@ class WorkEntryController extends Controller
             'entries.*' => ['integer', 'exists:work_entries,id'],
         ]);
 
+        $total = count($data['entries']);
+
         foreach ($data['entries'] as $index => $entryId) {
             WorkEntry::whereKey($entryId)->update([
-                'sort_order' => ($index + 1) * 10,
+                'sort_order' => ($total - $index) * 10,
             ]);
         }
 

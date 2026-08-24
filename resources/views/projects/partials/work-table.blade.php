@@ -28,17 +28,17 @@
                 $isInvoiced = (bool) $entry->invoiced_at && ! $isPaid;
             @endphp
             <div class="p-4 {{ $isPaid ? 'bg-emerald-50' : ($isInvoiced ? 'bg-amber-50' : '') }}">
-                <div class="flex items-start justify-between gap-3">
+                <div class="grid grid-cols-[minmax(0,1fr)_max-content] items-start gap-3">
                     <div class="min-w-0">
                         <div class="flex items-center gap-2">
                             @if($invoiceClient && ! $entry->payment_id)
                                 <input form="{{ $invoiceFormId }}" name="work_entry_ids[]" value="{{ $entry->id }}" type="checkbox" class="rounded border-slate-300">
                             @endif
-                            <div class="font-medium">{{ $entry->title }}</div>
+                            <div class="min-w-0 break-words font-medium">{{ $entry->title }}</div>
                         </div>
-                        <div class="text-sm text-slate-500">{{ $showProject ? ($entry->project?->name ?: '-') : (optional($entry->worked_on)->format('d.m.Y.') ?: '-') }}</div>
+                        <div class="break-words text-sm text-slate-500">{{ $showProject ? ($entry->project?->name ?: '-') : (optional($entry->worked_on)->format('d.m.Y.') ?: '-') }}</div>
                     </div>
-                    <div class="font-semibold">{{ $money($entry->amount, $currency) }}</div>
+                    <div class="whitespace-nowrap text-right font-semibold">{{ $money($entry->amount, $currency) }}</div>
                 </div>
                 <div class="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-600">
                     <span>{{ $entry->hours ? number_format((float) $entry->hours, 2, ',', '.') . 'h' : 'Fiksno' }}</span>
@@ -116,6 +116,12 @@
             </tbody>
         </table>
     </div>
+
+    @if(method_exists($entries, 'links'))
+        <div class="border-t border-slate-200 p-4">
+            {{ $entries->links() }}
+        </div>
+    @endif
 </section>
 
 @if($canManage)

@@ -43,8 +43,8 @@ class DashboardController extends Controller
             'workEntries' => WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
                 ->with('project')
                 ->where('visible_to_client', true)
-                ->orderBy('sort_order')
-                ->orderBy('id')
+                ->orderByDesc('sort_order')
+                ->orderByDesc('id')
                 ->limit(20)
                 ->get(),
             'payments' => $client->payments()->with('project')->where('visible_to_client', true)->latest('paid_on')->get(),
