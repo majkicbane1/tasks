@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('project_id')->nullable()->constrained()->nullOnDelete();
             $table->date('paid_on');
             $table->decimal('amount', 10, 2);
-            $table->string('type')->default('payment')->index();
+            $table->string('type', 50)->default('payment')->index();
             $table->string('method')->nullable();
             $table->string('reference')->nullable();
             $table->text('note')->nullable();

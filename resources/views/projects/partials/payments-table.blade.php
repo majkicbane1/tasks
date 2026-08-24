@@ -1,4 +1,7 @@
 <section class="mt-6 rounded-lg border border-slate-200 bg-white">
+    @php
+        $allowMarkPaid = $allowMarkPaid ?? true;
+    @endphp
     <div class="border-b border-slate-200 p-4"><h2 class="font-semibold">Uplate i racuni</h2></div>
     <div class="divide-y divide-slate-100">
         @forelse($payments as $payment)
@@ -25,7 +28,7 @@
                     {{ $isExpense ? '+' : ($isPending ? '' : '-') }}{{ $money($payment->amount, $currency) }}
                 </div>
                 <div class="flex gap-3 md:justify-end">
-                    @if($isPending)
+                    @if($isPending && $allowMarkPaid)
                         <form method="POST" action="{{ route('payments.mark-paid', $payment) }}">
                             @csrf
                             @method('PATCH')

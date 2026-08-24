@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->string('status', 50)->default('paid')->index()->after('type');
+        Schema::table('clients', function (Blueprint $table) {
+            $table->string('share_token', 80)->nullable()->unique()->after('is_active');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('clients', function (Blueprint $table) {
+            $table->dropColumn('share_token');
         });
     }
 };

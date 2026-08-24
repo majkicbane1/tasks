@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
 #[Fillable([
-    'company_name', 'contact_name', 'email', 'phone', 'website', 'tax_number',
-    'address', 'default_hourly_rate', 'currency', 'notes', 'is_active',
+    'company_name', 'contact_name', 'email', 'phone', 'website', 'tax_number', 'registration_number',
+    'address', 'default_hourly_rate', 'currency', 'notes', 'is_active', 'share_token',
 ])]
 class Client extends Model
 {

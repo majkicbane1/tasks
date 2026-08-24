@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('hourly_rate', 10, 2)->nullable();
             $table->decimal('fixed_amount', 10, 2)->nullable();
             $table->decimal('amount', 10, 2);
-            $table->string('status')->default('billable')->index();
+            $table->string('status', 50)->default('billable')->index();
             $table->boolean('visible_to_client')->default(true);
             $table->text('internal_note')->nullable();
             $table->timestamps();

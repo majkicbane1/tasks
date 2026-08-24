@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->string('status')->default('active')->index();
+            $table->string('status', 50)->default('active')->index();
             $table->decimal('hourly_rate', 10, 2)->nullable();
             $table->text('description')->nullable();
             $table->date('started_at')->nullable();

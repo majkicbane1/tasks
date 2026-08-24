@@ -25,3 +25,13 @@ npm.cmd run build
 - Klijent: `klijent@example.com` / `password123`
 
 Super admin upravlja klijentima, projektima, poslovima i uplatama. Klijent vidi samo svoje projekte, radne stavke koje su označene kao vidljive i uplate/troškove koji su označeni kao vidljivi.
+
+## Live migracije
+
+Kada si ulogovan kao super admin, otvori:
+
+```text
+/migration
+```
+
+Ruta pokreće samo `php artisan migrate --force`. Ako nisi super admin, pristup nije dozvoljen.

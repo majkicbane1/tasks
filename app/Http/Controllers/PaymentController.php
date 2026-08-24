@@ -42,6 +42,12 @@ class PaymentController extends Controller
     {
         $payment->update($this->normalizedPaymentData($request));
 
+        if ($payment->isPaidPayment()) {
+            $payment->workEntries()->update(['paid_at' => now()]);
+        } elseif ($payment->isPendingInvoice()) {
+            $payment->workEntries()->update(['paid_at' => null]);
+        }
+
         return redirect()->route('clients.show', $payment->client)->with('status', 'Uplata je sacuvana.');
     }
 
@@ -59,6 +65,9 @@ class PaymentController extends Controller
             'status' => 'paid',
             'paid_on' => now()->toDateString(),
         ]);
+        $payment->workEntries()->update([
+            'paid_at' => now(),
+        ]);
 
         return back()->with('status', 'Racun je oznacen kao placen.');
     }
@@ -66,6 +75,11 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         $client = $payment->client;
+        $payment->workEntries()->update([
+            'payment_id' => null,
+            'invoiced_at' => null,
+            'paid_at' => null,
+        ]);
         $payment->delete();
 
         return redirect()->route('clients.show', $client)->with('status', 'Uplata je obrisana.');

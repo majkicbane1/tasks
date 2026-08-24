@@ -18,7 +18,7 @@ class DashboardController extends Controller
             $clients = Client::withCount('projects')->latest()->get();
             $projects = Project::with('client')->latest()->limit(8)->get();
             $workTotal = (float) WorkEntry::sum('amount');
-            $paymentsTotal = (float) Payment::where('type', 'payment')->sum('amount');
+            $paymentsTotal = (float) Payment::where('type', 'payment')->where('status', 'paid')->sum('amount');
             $expensesTotal = (float) Payment::where('type', 'expense')->sum('amount');
 
             return view('dashboard', [
@@ -43,7 +43,8 @@ class DashboardController extends Controller
             'workEntries' => WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
                 ->with('project')
                 ->where('visible_to_client', true)
-                ->latest('worked_on')
+                ->orderBy('sort_order')
+                ->orderBy('id')
                 ->limit(20)
                 ->get(),
             'payments' => $client->payments()->with('project')->where('visible_to_client', true)->latest('paid_on')->get(),

@@ -30,6 +30,11 @@ class Payment extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function workEntries()
+    {
+        return $this->hasMany(WorkEntry::class);
+    }
+
     public function isPendingInvoice(): bool
     {
         return $this->type === 'payment' && $this->status === 'pending_invoice';

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\WorkEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
@@ -52,7 +55,8 @@ class ClientController extends Controller
         $client->load(['users']);
         $workEntries = WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
             ->with('project')
-            ->latest('worked_on')
+            ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
         $payments = $client->payments()->with('project')->latest('paid_on')->get();
 
@@ -148,6 +152,61 @@ class ClientController extends Controller
         return redirect()->route('clients.edit', $client)->with('status', 'Nalog je obrisan.');
     }
 
+    public function invoiceWorkEntries(Request $request, Client $client)
+    {
+        $data = $request->validate([
+            'work_entry_ids' => ['required', 'array', 'min:1'],
+            'work_entry_ids.*' => ['integer', 'exists:work_entries,id'],
+            'paid_on' => ['required', 'date'],
+            'reference' => ['nullable', 'string', 'max:255'],
+            'note' => ['nullable', 'string'],
+        ]);
+
+        $entries = WorkEntry::whereIn('id', $data['work_entry_ids'])
+            ->whereNull('payment_id')
+            ->whereHas('project', fn ($query) => $query->where('client_id', $client->id))
+            ->get();
+
+        if ($entries->isEmpty()) {
+            return back()->with('error', 'Nema izabranih nefakturisanih stavki.');
+        }
+
+        DB::transaction(function () use ($client, $data, $entries) {
+            $payment = Payment::create([
+                'client_id' => $client->id,
+                'project_id' => null,
+                'paid_on' => $data['paid_on'],
+                'amount' => $entries->sum('amount'),
+                'type' => 'payment',
+                'status' => 'pending_invoice',
+                'reference' => $data['reference'] ?: 'Racun za '.count($entries).' stavki',
+                'note' => $data['note'] ?? null,
+                'visible_to_client' => true,
+            ]);
+
+            WorkEntry::whereIn('id', $entries->pluck('id'))->update([
+                'payment_id' => $payment->id,
+                'invoiced_at' => now(),
+                'paid_at' => null,
+            ]);
+        });
+
+        return redirect()->route('clients.show', $client)->with('status', 'Racun je kreiran za izabrane stavke.');
+    }
+
+    public function share(Request $request, Client $client)
+    {
+        if ($request->boolean('regenerate') || ! $client->share_token) {
+            do {
+                $token = Str::random(48);
+            } while (Client::where('share_token', $token)->exists());
+
+            $client->update(['share_token' => $token]);
+        }
+
+        return redirect()->route('clients.show', $client)->with('status', 'Share link je spreman.');
+    }
+
     private function validatedClient(Request $request): array
     {
         return $request->validate([
@@ -157,6 +216,7 @@ class ClientController extends Controller
             'phone' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
             'tax_number' => ['nullable', 'string', 'max:255'],
+            'registration_number' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:255'],
             'default_hourly_rate' => ['required', 'numeric', 'min:0'],
             'currency' => ['required', 'string', 'size:3'],
