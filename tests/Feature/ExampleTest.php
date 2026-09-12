@@ -132,6 +132,51 @@ class ExampleTest extends TestCase
         $this->assertSame(120.0, $client->fresh()->total_payments);
     }
 
+    public function test_super_admin_can_delete_payment_and_clear_invoiced_work_entries(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'super_admin',
+        ]);
+        $client = Client::create([
+            'company_name' => 'Test Firma',
+            'default_hourly_rate' => 35,
+            'currency' => 'EUR',
+            'is_active' => true,
+        ]);
+        $project = Project::create([
+            'client_id' => $client->id,
+            'name' => 'Test projekat',
+            'status' => 'active',
+        ]);
+        $payment = Payment::create([
+            'client_id' => $client->id,
+            'project_id' => $project->id,
+            'paid_on' => now()->toDateString(),
+            'amount' => 120,
+            'type' => 'payment',
+            'status' => 'paid',
+            'visible_to_client' => true,
+        ]);
+        $entry = WorkEntry::create([
+            'project_id' => $project->id,
+            'payment_id' => $payment->id,
+            'invoiced_at' => now(),
+            'paid_at' => now(),
+            'title' => 'Test stavka',
+            'hours' => 1,
+            'hourly_rate' => 35,
+            'amount' => 35,
+        ]);
+
+        $this->actingAs($admin)->delete("/payments/{$payment->id}")
+            ->assertRedirect(route('clients.show', $client));
+
+        $this->assertDatabaseMissing('payments', ['id' => $payment->id]);
+        $this->assertNull($entry->fresh()->payment_id);
+        $this->assertNull($entry->fresh()->invoiced_at);
+        $this->assertNull($entry->fresh()->paid_at);
+    }
+
     public function test_super_admin_can_delete_client_project_and_work_entry(): void
     {
         $admin = User::factory()->create([

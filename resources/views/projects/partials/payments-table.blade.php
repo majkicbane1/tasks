@@ -9,7 +9,7 @@
                 $isPending = $payment->isPendingInvoice();
                 $isExpense = $payment->type === 'expense';
             @endphp
-            <div class="grid gap-2 p-4 md:grid-cols-[110px_1fr_140px_110px] md:items-center {{ $isPending ? 'bg-amber-50' : '' }}">
+            <div class="grid gap-2 p-4 md:grid-cols-[110px_1fr_140px_170px] md:items-center {{ $isPending ? 'bg-amber-50' : '' }}">
                 <div class="text-sm text-slate-500">{{ optional($payment->paid_on)->format('d.m.Y.') }}</div>
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
@@ -37,6 +37,11 @@
                     @endif
                     @unless($readonly)
                         <a class="self-center text-sm font-semibold text-teal-700" href="{{ route('payments.edit', $payment) }}">Izmeni</a>
+                        <form method="POST" action="{{ route('payments.destroy', $payment) }}" onsubmit="return confirm('Obrisati uplatu/racun?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="text-sm font-semibold text-rose-700">Obrisi</button>
+                        </form>
                     @endunless
                 </div>
             </div>
