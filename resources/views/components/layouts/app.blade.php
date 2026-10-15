@@ -32,6 +32,9 @@
                     <a href="{{ route('projects.index') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium {{ $active === 'projects' ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-100' }}">
                         <span class="text-lg">P</span> Projekti
                     </a>
+                    <a href="{{ route('exports.index') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium {{ $active === 'exports' ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-100' }}">
+                        <span class="text-lg">E</span> Izvoz podataka
+                    </a>
                 @else
                     <a href="{{ route('client.projects') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium {{ $active === 'projects' ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-100' }}">
                         <span class="text-lg">P</span> Projekti

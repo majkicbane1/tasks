@@ -1,5 +1,6 @@
 <x-layouts.app title="Klijenti" active="clients">
-    <div class="mb-4 flex justify-end">
+    <div class="mb-4 flex flex-wrap justify-end gap-2">
+        <x-export-download type="clients" />
         <a href="{{ route('clients.create') }}" class="rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white">+ Novi klijent</a>
     </div>
     <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">

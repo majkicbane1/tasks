@@ -1,5 +1,8 @@
 <x-layouts.app title="Projekti" active="projects">
-    <div class="mb-4 flex justify-end"><a href="{{ route('projects.create') }}" class="rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white">+ Novi projekat</a></div>
+    <div class="mb-4 flex flex-wrap justify-end gap-2">
+        <x-export-download type="projects" />
+        <a href="{{ route('projects.create') }}" class="rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white">+ Novi projekat</a>
+    </div>
     <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
         @forelse($projects as $project)
             <a href="{{ route('projects.show', $project) }}" class="grid gap-2 border-b border-slate-100 p-4 last:border-b-0 hover:bg-slate-50 md:grid-cols-[1fr_180px_140px] md:items-center">

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SharedClientController;
@@ -31,6 +32,9 @@ Route::middleware('auth')->group(function () {
         ->name('payments.mark-paid');
 
     Route::middleware('super_admin')->group(function () {
+        Route::get('/exports', [ExportController::class, 'index'])->name('exports.index');
+        Route::get('/exports/{type}', [ExportController::class, 'download'])->name('exports.download');
+
         Route::get('/migration', function () {
             Artisan::call('migrate', ['--force' => true]);
 

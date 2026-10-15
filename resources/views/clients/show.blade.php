@@ -1,5 +1,6 @@
 <x-layouts.app :title="$client->company_name" active="clients" eyebrow="Klijent">
     <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+        <a href="{{ route('exports.index', ['client_id' => $client->id]) }}" class="rounded-lg border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold">Izvoz podataka</a>
         <form method="POST" action="{{ route('clients.share', $client) }}">
             @csrf
             <button class="w-full rounded-lg border border-teal-300 px-4 py-2.5 text-center text-sm font-semibold text-teal-700 hover:bg-teal-50 sm:w-auto">Share / Podeli</button>
