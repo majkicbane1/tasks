@@ -1,5 +1,5 @@
 <input type="hidden" name="project_id" value="{{ old('project_id', $project->id) }}">
-<section class="rounded-lg border border-slate-200 bg-white p-4">
+<section class="card p-4">
     <div class="grid gap-4 md:grid-cols-2">
         <label class="block"><span class="mb-1 block text-sm font-medium">Datum</span><input name="worked_on" type="date" value="{{ old('worked_on', optional($entry->worked_on)->format('Y-m-d')) }}" class="w-full rounded-lg border border-slate-300 px-3 py-2.5"></label>
         <label class="block"><span class="mb-1 block text-sm font-medium">Status</span><select name="status" class="w-full rounded-lg border border-slate-300 px-3 py-2.5"><option value="billable" @selected(old('status', $entry->status) === 'billable')>Naplativo</option><option value="included" @selected(old('status', $entry->status) === 'included')>Uključeno / gratis</option><option value="draft" @selected(old('status', $entry->status) === 'draft')>Draft</option></select></label>

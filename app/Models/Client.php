@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\FinanceStats;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
@@ -32,6 +33,18 @@ class Client extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function financeSeries(bool $visibleOnly = false): array
+    {
+        $work = WorkEntry::whereHas('project', fn ($q) => $q->where('client_id', $this->id))
+            ->when($visibleOnly, fn ($q) => $q->where('visible_to_client', true))
+            ->get(['worked_on', 'created_at', 'amount']);
+        $payments = $this->payments()
+            ->when($visibleOnly, fn ($q) => $q->where('visible_to_client', true))
+            ->get(['paid_on', 'amount', 'type', 'status']);
+
+        return FinanceStats::series($work, $payments);
     }
 
     public function getTotalWorkAmountAttribute(): float

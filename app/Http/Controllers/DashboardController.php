@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Payment;
 use App\Models\Project;
 use App\Models\WorkEntry;
+use App\Services\FinanceStats;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -21,7 +22,17 @@ class DashboardController extends Controller
             $paymentsTotal = (float) Payment::where('type', 'payment')->where('status', 'paid')->sum('amount');
             $expensesTotal = (float) Payment::where('type', 'expense')->sum('amount');
 
+            $series = FinanceStats::series(WorkEntry::get(['worked_on', 'created_at', 'amount']), Payment::get(['paid_on', 'amount', 'type', 'status']));
+
             return view('dashboard', [
+                'series' => $series,
+                'trends' => [
+                    'work' => FinanceStats::trend($series['months'], 'work'),
+                    'paid' => FinanceStats::trend($series['months'], 'paid'),
+                    'expenses' => FinanceStats::trend($series['months'], 'expenses'),
+                ],
+                'invoiced' => (float) Payment::where('type', 'payment')->where('status', 'pending_invoice')->sum('amount'),
+                'unbilled' => (float) WorkEntry::whereNull('payment_id')->sum('amount'),
                 'clients' => $clients,
                 'projects' => $projects,
                 'stats' => [

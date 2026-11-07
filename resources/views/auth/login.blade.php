@@ -1,16 +1,16 @@
 <!doctype html>
-<html lang="sr" class="h-full bg-slate-100">
+<html lang="sr" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Prijava | Uizzard Poslovi</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="grid min-h-full place-items-center px-4 font-sans">
-    <form method="POST" action="{{ route('login.store') }}" class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+<body class="grid min-h-full place-items-center bg-[#ececf0] bg-[radial-gradient(60rem_30rem_at_50%_-10%,#fbe4db,transparent)] px-4 font-sans antialiased">
+    <form method="POST" action="{{ route('login.store') }}" class="card w-full max-w-md p-8">
         @csrf
         <div class="mb-6">
-            <div class="mb-3 grid h-12 w-12 place-items-center rounded-lg bg-teal-600 font-bold text-white">UP</div>
+            <div class="mb-3 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-700 font-bold text-white shadow-[0_6px_16px_-6px_rgb(205_94_64/.7)]">UP</div>
             <h1 class="text-2xl font-semibold">Prijava</h1>
             <p class="mt-1 text-sm text-slate-500">Admin panel za evidenciju poslova, uplata i dugovanja.</p>
         </div>

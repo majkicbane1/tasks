@@ -6,7 +6,7 @@
         </nav>
     </x-slot:nav>
 
-    <section class="rounded-lg border border-slate-200 bg-white">
+    <section class="card">
         <div class="border-b border-slate-200 p-4"><h2 class="font-semibold">Projekti</h2></div>
         <div class="divide-y divide-slate-100">
             @forelse($projects as $project)

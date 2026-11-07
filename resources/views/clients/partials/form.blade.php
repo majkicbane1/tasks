@@ -1,4 +1,4 @@
-<section class="rounded-lg border border-slate-200 bg-white p-4">
+<section class="card p-4">
     <h2 class="mb-4 font-semibold">Podaci o firmi</h2>
     <div class="grid gap-4 md:grid-cols-2">
         <label class="block"><span class="mb-1 block text-sm font-medium">Naziv firme</span><input name="company_name" value="{{ old('company_name', $client->company_name) }}" class="w-full rounded-lg border border-slate-300 px-3 py-2.5" required></label>
@@ -16,7 +16,7 @@
     </div>
 </section>
 @unless($client->exists)
-<section class="rounded-lg border border-slate-200 bg-white p-4">
+<section class="card p-4">
     <h2 class="mb-4 font-semibold">Nalog za klijenta</h2>
     <div class="grid gap-4 md:grid-cols-3">
         <label class="block"><span class="mb-1 block text-sm font-medium">Ime</span><input name="user_name" value="{{ old('user_name') }}" class="w-full rounded-lg border border-slate-300 px-3 py-2.5"></label>

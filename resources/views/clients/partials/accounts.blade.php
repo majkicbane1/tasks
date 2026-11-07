@@ -1,4 +1,4 @@
-<section class="mt-6 rounded-lg border border-slate-200 bg-white">
+<section class="mt-6 card">
     <div class="border-b border-slate-200 p-4">
         <h2 class="font-semibold">Klijentski nalozi</h2>
     </div>

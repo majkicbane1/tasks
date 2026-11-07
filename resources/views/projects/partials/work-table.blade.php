@@ -5,7 +5,7 @@
     $invoiceFormId = $invoiceClient ? 'invoice-work-entries-'.$invoiceClient->id : null;
 @endphp
 
-<section class="mt-6 rounded-lg border border-slate-200 bg-white">
+<section class="mt-6 card">
     <div class="border-b border-slate-200 p-4">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <h2 class="font-semibold">Poslovi</h2>

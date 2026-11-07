@@ -1,4 +1,4 @@
-<section class="mt-6 rounded-lg border border-slate-200 bg-white">
+<section class="mt-6 card">
     @php
         $allowMarkPaid = $allowMarkPaid ?? true;
     @endphp

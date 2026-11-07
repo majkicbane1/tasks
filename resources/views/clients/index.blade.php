@@ -3,7 +3,7 @@
         <x-export-download type="clients" />
         <a href="{{ route('clients.create') }}" class="rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white">+ Novi klijent</a>
     </div>
-    <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <div class="overflow-hidden card">
         <div class="hidden grid-cols-[1fr_120px_150px_150px] gap-4 border-b border-slate-200 bg-slate-50 p-3 text-xs font-semibold uppercase text-slate-500 md:grid">
             <div>Firma</div><div>Projekti</div><div>Satnica</div><div class="text-right">Preostalo</div>
         </div>

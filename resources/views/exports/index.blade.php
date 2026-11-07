@@ -1,5 +1,5 @@
 <x-layouts.app title="Izvoz podataka" active="exports">
-    <div class="mb-6 rounded-lg border border-slate-200 bg-white p-5">
+    <div class="mb-6 card p-5">
         <p class="text-sm text-slate-600">Izaberite Excel (.xlsx) ili CSV i preuzmite sve poslovne podatke ili pojedinačne evidencije. Excel izvoz svih podataka sadrži poseban list za svaku evidenciju; CSV izvoz svih podataka preuzima se kao ZIP arhiva.</p>
         <form method="GET" action="{{ route('exports.index') }}" class="mt-4 flex flex-wrap items-end gap-3">
             <div>
@@ -20,7 +20,7 @@
     </div>
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         @foreach($types as $type => $label)
-            <div class="space-y-4 rounded-lg border border-slate-200 bg-white p-5">
+            <div class="space-y-4 card p-5">
                 <h2 class="font-semibold">{{ $label }}</h2>
                 <x-export-download :type="$type" :client-id="$clientId" :format="$format" />
             </div>

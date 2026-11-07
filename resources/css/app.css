@@ -7,4 +7,94 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Terracotta accent replaces the old teal everywhere */
+    --color-teal-50: #fdf3ef;
+    --color-teal-100: #fbe4db;
+    --color-teal-200: #f6c8b8;
+    --color-teal-300: #eda68e;
+    --color-teal-400: #e17f60;
+    --color-teal-500: #d9694a;
+    --color-teal-600: #cd5e40;
+    --color-teal-700: #b04a30;
+    --color-teal-800: #8f3d29;
+    --color-teal-900: #6f3020;
+
+    --color-slate-50: #f8f8fa;
+    --color-slate-100: #f1f1f4;
+    --color-slate-200: #e9e9ee;
+    --color-slate-300: #dcdce3;
+
+    --radius-lg: 0.875rem;
+    --radius-xl: 1.25rem;
+}
+
+:root {
+    --accent: #cd5e40;
+    --accent-soft: #fdf3ef;
+    --ink: #14141a;
+}
+
+html { background: #ececf0; }
+
+@layer components {
+    .card {
+        min-width: 0;
+        background: #fff;
+        border: 1px solid #f0f0f4;
+        border-radius: 1.25rem;
+        box-shadow: 0 1px 2px rgb(20 20 26 / 0.03), 0 8px 24px -12px rgb(20 20 26 / 0.06);
+    }
+    .chip {
+        display: inline-flex; align-items: center; gap: .25rem;
+        border-radius: 999px; padding: .15rem .55rem;
+        font-size: .75rem; font-weight: 600;
+    }
+    .chip-up { background: #fdf0ea; color: #c2502f; }
+    .chip-down { background: #ecf8f1; color: #1f8a57; }
+    .icon-btn {
+        display: grid; place-items: center; height: 2.5rem; width: 2.5rem;
+        border-radius: .875rem; background: #f6f6f9; color: #52525e;
+        border: 1px solid #efeff3; transition: background .15s;
+    }
+    .icon-btn:hover { background: #eeeef3; }
+    .nav-link {
+        position: relative; display: flex; align-items: center; gap: .75rem;
+        border-radius: .875rem; padding: .65rem .85rem; font-size: .9rem; font-weight: 500;
+        color: #52525e; transition: background .15s, color .15s;
+    }
+    .nav-link:hover { background: #f6f6f9; color: var(--ink); }
+    .nav-link.active { background: var(--accent-soft); color: var(--accent); }
+    .nav-link.active::before {
+        content: ''; position: absolute; left: -1.05rem; top: 20%; bottom: 20%;
+        width: 3px; border-radius: 3px; background: var(--accent);
+    }
+    .seg { display: inline-flex; border-radius: 999px; background: #f6f6f9; border: 1px solid #efeff3; padding: 2px; }
+    .seg button { border-radius: 999px; padding: .35rem .9rem; font-size: .85rem; font-weight: 500; color: #52525e; }
+    .seg button.on { background: var(--ink); color: #fff; }
+}
+
+/* Entry animation */
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .5s cubic-bezier(.2,.7,.2,1) both; }
+.rise:nth-child(2) { animation-delay: .05s; }
+.rise:nth-child(3) { animation-delay: .1s; }
+.rise:nth-child(4) { animation-delay: .15s; }
+
+@keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.bar-grow { transform-origin: bottom; transform-box: fill-box; animation: grow .7s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+.seg-pop { transform-origin: center; transform-box: fill-box; animation: pop .45s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes draw { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+.draw { stroke-dasharray: var(--len); animation: draw 1s ease-out both; }
+
+.chart-tip {
+    position: absolute; pointer-events: none; transform: translate(-50%, -100%);
+    background: var(--accent); color: #fff; font-size: .75rem; font-weight: 600;
+    padding: .25rem .6rem; border-radius: .5rem; white-space: nowrap;
+    box-shadow: 0 6px 16px -6px rgb(205 94 64 / .6);
+}
+.chart-tip::after {
+    content: ''; position: absolute; left: 50%; bottom: -4px; width: 8px; height: 8px;
+    background: var(--accent); transform: translateX(-50%) rotate(45deg);
 }

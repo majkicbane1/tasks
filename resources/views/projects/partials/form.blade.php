@@ -1,4 +1,4 @@
-<section class="rounded-lg border border-slate-200 bg-white p-4">
+<section class="card p-4">
     <div class="grid gap-4 md:grid-cols-2">
         <label class="block"><span class="mb-1 block text-sm font-medium">Klijent</span><select id="project_client_id" name="client_id" class="w-full rounded-lg border border-slate-300 px-3 py-2.5" required>@foreach($clients as $client)<option value="{{ $client->id }}" data-hourly-rate="{{ $client->default_hourly_rate }}" @selected((int) old('client_id', request('client_id', $project->client_id)) === $client->id)>{{ $client->company_name }}</option>@endforeach</select></label>
         <label class="block"><span class="mb-1 block text-sm font-medium">Naziv projekta</span><input name="name" value="{{ old('name', $project->name) }}" class="w-full rounded-lg border border-slate-300 px-3 py-2.5" required></label>

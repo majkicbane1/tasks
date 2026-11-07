@@ -1,5 +1,5 @@
 <input type="hidden" name="client_id" value="{{ old('client_id', $client->id) }}">
-<section class="rounded-lg border border-slate-200 bg-white p-4">
+<section class="card p-4">
     <div class="grid gap-4 md:grid-cols-2">
         <label class="block"><span class="mb-1 block text-sm font-medium">Datum</span><input name="paid_on" type="date" value="{{ old('paid_on', optional($payment->paid_on)->format('Y-m-d') ?: now()->format('Y-m-d')) }}" class="w-full rounded-lg border border-slate-300 px-3 py-2.5" required></label>
         <label class="block"><span class="mb-1 block text-sm font-medium">Tip</span><select name="type" class="w-full rounded-lg border border-slate-300 px-3 py-2.5"><option value="payment" @selected(old('type', $payment->type) === 'payment')>Uplata / racun</option><option value="expense" @selected(old('type', $payment->type) === 'expense')>Trosak koji se dodaje</option></select></label>

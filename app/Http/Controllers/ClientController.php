@@ -14,9 +14,15 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clients = Client::withCount('projects')->latest()->paginate(15);
+        $q = trim((string) $request->query('q'));
+        $clients = Client::withCount('projects')
+            ->when($q !== '', fn ($query) => $query->where(fn ($w) => $w
+                ->where('company_name', 'like', "%{$q}%")
+                ->orWhere('contact_name', 'like', "%{$q}%")
+                ->orWhere('email', 'like', "%{$q}%")))
+            ->latest()->paginate(15)->withQueryString();
 
         return view('clients.index', compact('clients'));
     }
