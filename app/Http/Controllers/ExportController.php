@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Support\TenantRule;
 use App\Services\DataExport;
 use App\Services\ExcelExport;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class ExportController extends Controller
     public function index(Request $request)
     {
         $data = $request->validate([
-            'client_id' => ['nullable', 'integer', 'exists:clients,id'],
+            'client_id' => ['nullable', 'integer', TenantRule::client()],
             'format' => ['nullable', 'in:csv,xlsx'],
         ]);
 
@@ -31,7 +32,7 @@ class ExportController extends Controller
     {
         abort_unless($type === 'all' || array_key_exists($type, DataExport::TYPES), 404);
         $data = $request->validate([
-            'client_id' => ['nullable', 'integer', 'exists:clients,id'],
+            'client_id' => ['nullable', 'integer', TenantRule::client()],
             'format' => ['nullable', 'in:csv,xlsx'],
         ]);
         $clientId = isset($data['client_id']) ? (int) $data['client_id'] : null;

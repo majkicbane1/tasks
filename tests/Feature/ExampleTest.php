@@ -51,6 +51,7 @@ class ExampleTest extends TestCase
             'role' => 'super_admin',
         ]);
         $client = Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,
             'company_name' => 'Test Firma',
             'default_hourly_rate' => 35,
             'currency' => 'EUR',
@@ -78,6 +79,7 @@ class ExampleTest extends TestCase
             'role' => 'super_admin',
         ]);
         $client = Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,
             'company_name' => 'Test Firma',
             'default_hourly_rate' => 35,
             'currency' => 'EUR',
@@ -107,6 +109,7 @@ class ExampleTest extends TestCase
             'role' => 'super_admin',
         ]);
         $client = Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,
             'company_name' => 'Test Firma',
             'default_hourly_rate' => 35,
             'currency' => 'EUR',
@@ -138,6 +141,7 @@ class ExampleTest extends TestCase
             'role' => 'super_admin',
         ]);
         $client = Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,
             'company_name' => 'Test Firma',
             'default_hourly_rate' => 35,
             'currency' => 'EUR',
@@ -183,6 +187,7 @@ class ExampleTest extends TestCase
             'role' => 'super_admin',
         ]);
         $client = Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,
             'company_name' => 'Test Firma',
             'default_hourly_rate' => 35,
             'currency' => 'EUR',
@@ -217,6 +222,7 @@ class ExampleTest extends TestCase
             'role' => 'super_admin',
         ]);
         $client = Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,
             'company_name' => 'Test Firma',
             'default_hourly_rate' => 35,
             'currency' => 'EUR',

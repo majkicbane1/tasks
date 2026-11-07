@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Client;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Models\WorkEntry;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,14 +21,28 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate([
+            'email' => 'platform@uizzard.rs',
+        ], [
+            'name' => 'Platform Admin',
+            'role' => 'platform_admin',
+            'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
+        ]);
+
+        $tenant = Tenant::firstOrCreate(['name' => 'Uizzard']);
+
+        User::updateOrCreate([
             'email' => 'admin@uizzard.rs',
         ], [
+            'tenant_id' => $tenant->id,
             'name' => 'Super Admin',
             'role' => 'super_admin',
             'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
         ]);
 
         $client = Client::updateOrCreate([
+            'tenant_id' => $tenant->id,
             'company_name' => 'Demo Klijent',
         ], [
             'contact_name' => 'Demo Kontakt',
@@ -40,9 +55,11 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate([
             'email' => 'klijent@example.com',
         ], [
+            'tenant_id' => $tenant->id,
             'client_id' => $client->id,
             'name' => 'Demo Klijent',
             'role' => 'client',
+            'email_verified_at' => now(),
             'password' => bcrypt('password123'),
         ]);
 

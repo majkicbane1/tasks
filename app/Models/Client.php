@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use App\Services\FinanceStats;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
 #[Fillable([
     'company_name', 'contact_name', 'email', 'phone', 'website', 'tax_number', 'registration_number',
-    'address', 'default_hourly_rate', 'currency', 'notes', 'is_active', 'share_token',
+    'address', 'default_hourly_rate', 'currency', 'notes', 'is_active', 'share_token', 'tenant_id',
 ])]
 class Client extends Model
 {
+    use BelongsToTenant;
+
     protected function casts(): array
     {
         return [

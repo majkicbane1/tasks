@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\ScopedThroughClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
 #[Fillable(['client_id', 'name', 'status', 'hourly_rate', 'description', 'started_at', 'finished_at'])]
 class Project extends Model
 {
+    use ScopedThroughClient;
+
     protected function casts(): array
     {
         return [

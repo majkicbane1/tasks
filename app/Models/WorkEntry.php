@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\ScopedThroughClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 ])]
 class WorkEntry extends Model
 {
+    use ScopedThroughClient;
+
     protected function casts(): array
     {
         return [

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\WorkEntry;
+use App\Support\TenantRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -138,7 +139,7 @@ class WorkEntryController extends Controller
     private function validatedEntry(Request $request): array
     {
         return $request->validate([
-            'project_id' => ['required', 'exists:projects,id'],
+            'project_id' => ['required', TenantRule::project()],
             'worked_on' => ['nullable', 'date'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],

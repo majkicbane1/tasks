@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Payment;
+use App\Support\TenantRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -92,8 +93,8 @@ class PaymentController extends Controller
     private function validatedPayment(Request $request): array
     {
         return $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
-            'project_id' => ['nullable', 'exists:projects,id'],
+            'client_id' => ['required', TenantRule::client()],
+            'project_id' => ['nullable', TenantRule::project()],
             'paid_on' => ['required', 'date'],
             'amount' => ['required', 'numeric', 'min:0'],
             'type' => ['required', Rule::in(['payment', 'expense'])],

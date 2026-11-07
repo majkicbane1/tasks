@@ -46,6 +46,8 @@ class ClientController extends Controller
 
         if (! empty($userData['user_email'])) {
             User::create([
+                'tenant_id' => $client->tenant_id,
+                'email_verified_at' => now(),
                 'client_id' => $client->id,
                 'role' => 'client',
                 'name' => $userData['user_name'] ?: $client->contact_name ?: $client->company_name,
@@ -116,6 +118,8 @@ class ClientController extends Controller
         ]);
 
         User::create([
+            'tenant_id' => $client->tenant_id,
+            'email_verified_at' => now(),
             'client_id' => $client->id,
             'role' => 'client',
             'name' => $data['name'],

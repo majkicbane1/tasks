@@ -86,6 +86,7 @@ class ExportTest extends TestCase
         $this->admin();
         $note = "Čćžšđ; \"opis\"\nNovi red \\ tekst";
         Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,
             'company_name' => '=HYPERLINK("https://example.com")',
             'contact_name' => '  +SUM(1,2)',
             'notes' => $note,
@@ -102,7 +103,8 @@ class ExportTest extends TestCase
         $this->admin();
         $this->assertCount(1, $this->rows($this->get('/exports/tasks')->streamedContent()));
         for ($index = 0; $index < 18; $index++) {
-            Client::create(['company_name' => 'Klijent '.$index]);
+            Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,'company_name' => 'Klijent '.$index]);
         }
         $this->assertCount(19, $this->rows($this->get('/exports/clients')->streamedContent()));
     }
@@ -197,7 +199,8 @@ class ExportTest extends TestCase
 
     private function records(string $name = 'Čačak firma'): Client
     {
-        $client = Client::create(['company_name' => $name, 'currency' => 'EUR', 'share_token' => 'secret-share-token-'.$name]);
+        $client = Client::create([
+            'tenant_id' => \App\Models\Tenant::firstOrCreate(['name' => 'Test'])->id,'company_name' => $name, 'currency' => 'EUR', 'share_token' => 'secret-share-token-'.$name]);
         $project = Project::create(['client_id' => $client->id, 'name' => 'Sajt', 'status' => 'active']);
         $payment = Payment::create([
             'client_id' => $client->id, 'paid_on' => '2026-10-16', 'amount' => 75,

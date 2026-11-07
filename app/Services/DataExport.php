@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Client;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Models\Scopes\TenantScope;
 use App\Models\User;
 use App\Models\WorkEntry;
 use Generator;
@@ -30,7 +31,9 @@ class DataExport
             'tasks' => WorkEntry::with('project.client'),
             'invoices' => Payment::with('client', 'project')->where('type', 'payment'),
             'expenses' => Payment::with('client', 'project')->where('type', 'expense'),
-            'users' => User::with('client'),
+            'users' => User::with('client')
+                ->where('tenant_id', TenantScope::currentId() ?? 0)
+                ->where('role', '!=', User::ROLE_PLATFORM),
         };
 
         if ($clientId !== null) {

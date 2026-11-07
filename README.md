@@ -19,19 +19,34 @@ npm.cmd install
 npm.cmd run build
 ```
 
-## Demo nalozi
+## Uloge i firme
 
-- Super admin: `admin@uizzard.rs` / `password123`
+- **Platform admin** (`platform_admin`) - vlasnik platforme. Upravlja firmama (freelancerima), podešavanjima mejla, Google ključevima, pravilima registracije i migracijama (`/platform`).
+- **Admin firme** (`super_admin`) - freelancer koji upravlja svojim okruženjem: klijentima, projektima, poslovima, uplatama i odmorom. Svaka firma vidi samo svoje podatke.
+- **Klijent** (`client`) - vidi samo svoje projekte i stavke označene kao vidljive.
+
+Postojeći podaci pri migraciji postaju firma **Uizzard**.
+
+### Prvi platform admin
+
+```bash
+php artisan platform:admin ti@domen.rs --name="Ime"
+```
+
+Ili pre prve migracije podesi `PLATFORM_ADMIN_EMAIL` i `PLATFORM_ADMIN_PASSWORD` u `.env`.
+
+### Mejl, Google, 2FA
+
+- Mejl (SMTP), Google Client ID/Secret i registracija/potvrda emaila podešavaju se u `/platform/settings` (tajne se čuvaju šifrovane).
+- Google redirect URI: `{APP_URL}/auth/google/callback`.
+- 2FA (Google Authenticator) svako uključuje u **Moj nalog**; uz kod važe i rezervni kodovi.
+
+## Demo nalozi (`migrate:fresh --seed`)
+
+- Platform admin: `platform@uizzard.rs` / `password123`
+- Admin firme Uizzard: `admin@uizzard.rs` / `password123`
 - Klijent: `klijent@example.com` / `password123`
-
-Super admin upravlja klijentima, projektima, poslovima i uplatama. Klijent vidi samo svoje projekte, radne stavke koje su označene kao vidljive i uplate/troškove koji su označeni kao vidljivi.
 
 ## Live migracije
 
-Kada si ulogovan kao super admin, otvori:
-
-```text
-/migration
-```
-
-Ruta pokreće samo `php artisan migrate --force`. Ako nisi super admin, pristup nije dozvoljen.
+Kao platform admin otvori **Održavanje** (`/platform/maintenance`) i pokreni migracije.

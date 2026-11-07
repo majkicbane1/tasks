@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['date', 'portion', 'note'])]
+#[Fillable(['tenant_id', 'date', 'portion', 'note'])]
 class LeaveDay extends Model
 {
+    use BelongsToTenant;
+
     /** Allowed shares of a day with their label and short symbol. */
     public const PORTIONS = [
         '1.00' => ['label' => 'Ceo dan', 'symbol' => '1'],

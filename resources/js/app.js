@@ -254,6 +254,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-chart="spark"]').forEach(spark);
     document.querySelectorAll('[data-filter]').forEach(tableFilter);
 
+    // 2FA setup: draw the otpauth:// QR code in the browser (the secret never leaves the page)
+    const qr = document.querySelector('[data-qr]');
+    if (qr) {
+        import('qrcode').then(({ default: QRCode }) =>
+            QRCode.toCanvas(qr, qr.dataset.qr, { width: 192, margin: 1 }),
+        );
+    }
+
     const search = document.getElementById('globalSearch');
     document.addEventListener('keydown', (e) => {
         if (e.key === 'k' && (e.ctrlKey || e.metaKey)) {

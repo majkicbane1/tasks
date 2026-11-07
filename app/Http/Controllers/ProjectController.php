@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Project;
+use App\Support\TenantRule;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -68,7 +69,7 @@ class ProjectController extends Controller
     private function validatedProject(Request $request): array
     {
         return $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
+            'client_id' => ['required', TenantRule::client()],
             'name' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:active,paused,completed'],
             'hourly_rate' => ['nullable', 'numeric', 'min:0'],

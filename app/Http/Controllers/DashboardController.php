@@ -16,6 +16,10 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        if ($user->isPlatformAdmin()) {
+            return redirect()->route('platform.tenants.index');
+        }
+
         if ($user->isSuperAdmin()) {
             $clients = Client::withCount('projects')->latest()->get();
             $projects = Project::with('client')->latest()->limit(8)->get();

@@ -66,7 +66,7 @@ class SettingsController extends Controller
             $status = null;
         }
 
-        $redirect = redirect()->route('settings.index')->with('output', $output ?: 'Nema izlaza.');
+        $redirect = redirect()->route('platform.settings.index')->with('output', $output ?: 'Nema izlaza.');
 
         return $status
             ? $redirect->with('status', $status)
