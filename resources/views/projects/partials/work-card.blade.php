@@ -18,11 +18,13 @@
     </div>
     <div class="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-600">
         <span>{{ $entry->hours ? number_format((float) $entry->hours, 2, ',', '.') . 'h' : 'Fiksno' }}</span>
-        @if($isPaid)
-            <span class="pill pill-green">Plaćeno</span>
-        @elseif($isInvoiced)
-            <span class="pill pill-amber">Fakturisano</span>
-        @endif
+        <span data-status-cell="{{ $entry->id }}">
+            @if($isPaid)
+                <span class="pill pill-green">Plaćeno</span>
+            @elseif($isInvoiced)
+                <span class="pill pill-amber">Fakturisano</span>
+            @endif
+        </span>
     </div>
     @if($canManage)
         <div class="mt-3 flex gap-1">

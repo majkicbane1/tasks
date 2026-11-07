@@ -13,7 +13,7 @@
     <td><div class="font-semibold">{{ $entry->title }}</div><div class="text-xs text-slate-500">{{ $entry->description }}</div></td>
     <td class="text-right">{{ $entry->hours ?: '-' }}</td>
     <td class="whitespace-nowrap text-right font-semibold">{{ $money($entry->amount, $currency) }}</td>
-    <td>
+    <td data-status-cell="{{ $entry->id }}">
         @if($isPaid)
             <span class="pill pill-green">Plaćeno</span>
         @elseif($isInvoiced)

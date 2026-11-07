@@ -73,6 +73,8 @@ Route::middleware('auth')->group(function () {
             ->name('work-entries.reorder');
         Route::patch('/work-entries/bulk', [WorkEntryController::class, 'bulkUpdate'])
             ->name('work-entries.bulk');
+        Route::delete('/work-entries/bulk', [WorkEntryController::class, 'bulkDestroy'])
+            ->name('work-entries.bulk-destroy');
         Route::get('/clients/{client}/more', [ClientController::class, 'more'])
             ->whereNumber('client')
             ->name('clients.more');

@@ -86,17 +86,53 @@ class WorkEntryController extends Controller
     public function bulkUpdate(Request $request)
     {
         $data = $request->validate([
-            'ids' => ['required', 'array', 'min:1'],
+            'ids' => ['required', 'array', 'min:1', 'max:500'],
             'ids.*' => ['integer', 'exists:work_entries,id'],
-            'worked_on' => ['required', 'date'],
+            'worked_on' => ['nullable', 'date', 'required_without:state'],
+            'state' => ['nullable', Rule::in(['open', 'invoiced', 'paid']), 'required_without:worked_on'],
         ]);
 
-        $updated = WorkEntry::whereIn('id', $data['ids'])->update(['worked_on' => $data['worked_on']]);
+        $query = WorkEntry::whereIn('id', $data['ids']);
+        $response = ['updated' => (clone $query)->count()];
 
-        return response()->json([
-            'updated' => $updated,
-            'date' => \Illuminate\Support\Carbon::parse($data['worked_on'])->format('d.m.Y.'),
+        if (! empty($data['worked_on'])) {
+            (clone $query)->update(['worked_on' => $data['worked_on']]);
+            $response['date'] = \Illuminate\Support\Carbon::parse($data['worked_on'])->format('d.m.Y.');
+        }
+
+        // Only the marker on the entry changes; invoices/payments (and so the debt) are not touched.
+        if (! empty($data['state'])) {
+            match ($data['state']) {
+                'open' => (clone $query)->update(['invoiced_at' => null, 'paid_at' => null]),
+                'invoiced' => $this->markInvoiced($query),
+                'paid' => $this->markPaid($query),
+            };
+            $response['state'] = $data['state'];
+        }
+
+        return response()->json($response);
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:500'],
+            'ids.*' => ['integer'],
         ]);
+
+        return response()->json(['deleted' => WorkEntry::whereIn('id', $data['ids'])->delete()]);
+    }
+
+    private function markInvoiced($query): void
+    {
+        (clone $query)->whereNull('invoiced_at')->update(['invoiced_at' => now()]);
+        (clone $query)->update(['paid_at' => null]);
+    }
+
+    private function markPaid($query): void
+    {
+        (clone $query)->whereNull('invoiced_at')->update(['invoiced_at' => now()]);
+        (clone $query)->whereNull('paid_at')->update(['paid_at' => now()]);
     }
 
     private function validatedEntry(Request $request): array

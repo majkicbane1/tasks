@@ -68,29 +68,74 @@ function bulkScope(scope) {
     });
     document.addEventListener('bulk:refresh', render);
 
-    bar.querySelector('[data-bulk-apply]').addEventListener('click', async (e) => {
-        const date = bar.querySelector('[data-bulk-date]').value;
-        if (!date) return toast('Izaberi datum.', true);
-        const btn = e.currentTarget;
+    // one request helper for date / status / delete
+    const send = async (method, url, payload, btn) => {
         btn.disabled = true;
         try {
-            const ids = [...sel];
-            const res = await fetch(samePath(scope.dataset.bulkUrl), {
-                method: 'PATCH',
+            const res = await fetch(samePath(url), {
+                method,
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': csrf },
-                body: JSON.stringify({ ids, worked_on: date }),
+                body: JSON.stringify(payload),
             });
-            if (!res.ok) throw new Error('bulk update failed');
-            const data = await res.json();
-            ids.forEach((id) => scope.querySelectorAll(`[data-date-cell="${id}"]`).forEach((c) => (c.textContent = data.date)));
-            sel.clear();
-            render();
-            toast(`Datum promenjen za ${data.updated} stavki (${data.date})`);
-        } catch {
-            toast('Izmena nije uspela.', true);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch (err) {
+            toast(`Izmena nije uspela (${err.message}).`, true);
+            return null;
         } finally {
             btn.disabled = false;
         }
+    };
+
+    const STATE_LABEL = { open: 'Otvoreno', invoiced: 'Fakturisano', paid: 'Plaćeno' };
+    const pill = (state, card) => {
+        if (state === 'paid') return '<span class="pill pill-green">Plaćeno</span>';
+        if (state === 'invoiced') return '<span class="pill pill-amber">Fakturisano</span>';
+        return card ? '' : '<span class="pill pill-gray">Otvoreno</span>';
+    };
+
+    // change the date of the selected entries
+    bar.querySelector('[data-bulk-apply]').addEventListener('click', async (e) => {
+        const date = bar.querySelector('[data-bulk-date]').value;
+        if (!date) return toast('Izaberi datum.', true);
+        const ids = [...sel];
+        const data = await send('PATCH', scope.dataset.bulkUrl, { ids, worked_on: date }, e.currentTarget);
+        if (!data) return;
+        ids.forEach((id) => scope.querySelectorAll(`[data-date-cell="${id}"]`).forEach((c) => (c.textContent = data.date)));
+        sel.clear();
+        render();
+        toast(`Datum promenjen za ${data.updated} stavki (${data.date})`);
+    });
+
+    // change the status marker (Otvoreno / Fakturisano / Plaćeno) of the selected entries
+    bar.querySelector('[data-bulk-apply-state]').addEventListener('click', async (e) => {
+        const state = bar.querySelector('[data-bulk-state]').value;
+        const ids = [...sel];
+        if (!confirm(`Postaviti status "${STATE_LABEL[state]}" za ${ids.length} stavki?\n\nMenja se samo oznaka na stavci, računi i dugovanje se ne menjaju.`)) return;
+        const data = await send('PATCH', scope.dataset.bulkUrl, { ids, state }, e.currentTarget);
+        if (!data) return;
+        ids.forEach((id) =>
+            scope.querySelectorAll(`[data-status-cell="${id}"]`).forEach((c) => {
+                c.innerHTML = pill(state, c.tagName === 'SPAN');
+            }),
+        );
+        sel.clear();
+        render();
+        toast(`Status „${STATE_LABEL[state]}“ postavljen za ${data.updated} stavki`);
+    });
+
+    // delete the selected entries
+    bar.querySelector('[data-bulk-delete]').addEventListener('click', async (e) => {
+        const ids = [...sel];
+        if (!ids.length || !confirm(`Obrisati izabrane stavke (${ids.length})? Ovo se ne može vratiti.`)) return;
+        const data = await send('DELETE', e.currentTarget.dataset.deleteUrl, { ids }, e.currentTarget);
+        if (!data) return;
+        ids.forEach((id) => scope.querySelectorAll(`[data-entry-id="${id}"]`).forEach((row) => row.remove()));
+        sel.clear();
+        render();
+        toast(`Obrisano stavki: ${data.deleted}. Osvežavam…`);
+        // totals, chart and balances are rendered by the server, so reload to keep them correct
+        setTimeout(() => window.location.reload(), 900);
     });
 
     // invoice only the selected entries that are not invoiced yet
