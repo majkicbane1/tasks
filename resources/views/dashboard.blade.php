@@ -19,8 +19,8 @@
     <div class="flex flex-wrap items-end justify-between gap-3 px-1">
         <p class="text-sm text-slate-500">Evo kratkog pregleda kako vam posluje biznis — {{ now()->locale('sr_Latn')->translatedFormat('l, d. F Y.') }}</p>
         <div class="flex gap-2">
-            <a href="{{ route('exports.index') }}" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium transition hover:bg-slate-50">Izvezi izveštaj</a>
-            <a href="{{ route('clients.create') }}" class="rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-[0_6px_16px_-8px_rgb(205_94_64/.8)] transition hover:bg-teal-700">+ Klijent</a>
+            <a href="{{ route('exports.index') }}" class="btn">Izvezi izveštaj</a>
+            <a href="{{ route('clients.create') }}" class="btn btn-primary">+ Klijent</a>
         </div>
     </div>
 

@@ -6,10 +6,11 @@
         'dashboard' => '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
         'clients' => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
         'projects' => '<path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/>',
+        'settings' => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
         'exports' => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
     ];
     $nav = $isAdmin
-        ? [['dashboard', 'Dashboard', route('dashboard')], ['clients', 'Klijenti', route('clients.index')], ['projects', 'Projekti', route('projects.index')], ['exports', 'Izvoz podataka', route('exports.index')]]
+        ? [['dashboard', 'Dashboard', route('dashboard')], ['clients', 'Klijenti', route('clients.index')], ['projects', 'Projekti', route('projects.index')], ['exports', 'Izvoz podataka', route('exports.index')], ['settings', 'Podešavanja', route('settings.index')]]
         : [['dashboard', 'Dashboard', route('dashboard')], ['projects', 'Projekti', route('client.projects')]];
     $initials = collect(explode(' ', trim($user?->name ?? 'U')))->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->take(2)->implode('');
 @endphp
@@ -22,7 +23,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-full bg-[#ececf0] font-sans text-slate-900 antialiased">
-    <div class="mx-auto min-h-screen max-w-[1680px] gap-6 p-3 sm:p-5 lg:flex">
+    <div class="min-h-screen w-full gap-6 p-3 sm:p-5 lg:flex">
         <div id="mobileOverlay" class="fixed inset-0 z-30 hidden bg-slate-950/40 backdrop-blur-sm lg:hidden"></div>
 
         <aside id="sidebar" class="card fixed inset-y-3 left-3 z-40 flex w-72 -translate-x-[110%] flex-col p-5 transition duration-300 lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)] lg:w-[17rem] lg:shrink-0 lg:translate-x-0">
@@ -63,7 +64,7 @@
         </aside>
 
         <main class="min-w-0 flex-1 space-y-5 overflow-x-clip">
-            <header class="card sticky top-3 z-20 flex items-center gap-3 p-3 sm:top-5 sm:p-4">
+            <div class="topfade"><header class="card flex items-center gap-3 p-3 sm:p-4">
                 <button id="menuButton" class="icon-btn lg:hidden" aria-label="Meni">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
@@ -78,7 +79,7 @@
                 @endif
                 <div class="ml-auto hidden text-sm text-slate-500 sm:block">{{ now()->translatedFormat('d. m. Y.') }}</div>
                 <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-teal-300 to-teal-600 text-sm font-semibold text-white">{{ $initials }}</span>
-            </header>
+            </header></div>
 
             <div class="px-1">
                 <p class="text-xs font-semibold uppercase tracking-wide text-teal-700">{{ $eyebrow ?? 'Panel' }}</p>

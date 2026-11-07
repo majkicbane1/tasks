@@ -119,29 +119,29 @@ function barChart(root) {
 /* ---------- Segmented gauge ---------- */
 function gauge(root) {
     const pct = Math.max(0, Math.min(100, parseFloat(root.dataset.value) || 0));
-    const N = 16, W = 360, H = 220, cx = W / 2, cy = 190, R = 160, r = 96;
-    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, class: 'w-full' }, root);
-    const a0 = Math.PI * 1.02, a1 = Math.PI * 1.98;
-    const gap = 0.045, step = (a1 - a0) / N;
+    const N = 12, W = 340, H = 190, cx = W / 2, cy = 172, R = 150, r = 88, cr = 3;
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, class: 'mx-auto w-full max-w-[340px]' }, root);
+    const a0 = Math.PI * 1.0, a1 = Math.PI * 2.0;
+    const step = (a1 - a0) / N, gap = 0.028;
     const filled = Math.round((pct / 100) * N);
     const pt = (a, rad) => [cx + rad * Math.cos(a), cy + rad * Math.sin(a)];
     for (let i = 0; i < N; i++) {
         const s = a0 + step * i + gap, e = a0 + step * (i + 1) - gap;
-        const [x1, y1] = pt(s, R), [x2, y2] = pt(e, R), [x3, y3] = pt(e, r), [x4, y4] = pt(s, r);
+        // shrink by the corner radius, the stroke gives the rounded look back
+        const Ro = R - cr, Ri = r + cr, ds = cr / R, di = cr / r;
+        const [x1, y1] = pt(s + ds, Ro), [x2, y2] = pt(e - ds, Ro), [x3, y3] = pt(e - di, Ri), [x4, y4] = pt(s + di, Ri);
         const on = i < filled;
-        // the last few filled segments fade out like the reference design
-        const tail = filled - 1 - i;
-        const op = on ? (tail < 4 ? 0.35 + tail * 0.2 : 1) : 1;
-        const fill = on ? ACCENT : '#f2f2f5';
+        const op = on ? 1 - 0.6 * (i / (N - 1)) : 1;
+        const fill = on ? ACCENT : '#f1f1f4';
         el('path', {
-            d: `M${x1} ${y1} A${R} ${R} 0 0 1 ${x2} ${y2} L${x3} ${y3} A${r} ${r} 0 0 0 ${x4} ${y4}Z`,
-            fill, stroke: fill, 'fill-opacity': op, 'stroke-opacity': op, 'stroke-width': 4, 'stroke-linejoin': 'round',
-            class: 'seg-pop', style: `animation-delay:${i * 45}ms`,
+            d: `M${x1} ${y1} A${Ro} ${Ro} 0 0 1 ${x2} ${y2} L${x3} ${y3} A${Ri} ${Ri} 0 0 0 ${x4} ${y4}Z`,
+            fill, stroke: fill, opacity: op, 'stroke-width': cr * 2, 'stroke-linejoin': 'round',
+            class: 'seg-pop', style: `animation-delay:${i * 55}ms`,
         }, svg);
     }
-    el('text', { x: cx, y: cy - 28, 'text-anchor': 'middle', 'font-size': 44, 'font-weight': 600, fill: '#14141a' }, svg).textContent =
+    el('text', { x: cx, y: cy - 36, 'text-anchor': 'middle', 'font-size': 40, 'font-weight': 600, fill: '#14141a' }, svg).textContent =
         pct.toFixed(1).replace('.0', '') + '%';
-    el('text', { x: cx, y: cy - 4, 'text-anchor': 'middle', 'font-size': 13, fill: '#6b6b78' }, svg).textContent = root.dataset.label || '';
+    el('text', { x: cx, y: cy - 12, 'text-anchor': 'middle', 'font-size': 13, fill: '#6b6b78' }, svg).textContent = root.dataset.label || '';
 }
 
 /* ---------- Donut ---------- */
@@ -197,7 +197,31 @@ function tableFilter(input) {
     });
 }
 
+/* ---------- Copy to clipboard ---------- */
+function copyButton(btn) {
+    btn.addEventListener('click', async () => {
+        const text = btn.dataset.copy;
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {
+            const ta = Object.assign(document.createElement('textarea'), { value: text });
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+        }
+        const label = btn.querySelector('span');
+        label.textContent = 'Kopirano ✓';
+        btn.classList.add('!border-emerald-300', '!bg-emerald-50', '!text-emerald-700');
+        setTimeout(() => {
+            label.textContent = btn.dataset.label;
+            btn.classList.remove('!border-emerald-300', '!bg-emerald-50', '!text-emerald-700');
+        }, 1600);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-copy]').forEach(copyButton);
     document.querySelectorAll('[data-chart="bars"]').forEach(barChart);
     document.querySelectorAll('[data-chart="gauge"]').forEach(gauge);
     document.querySelectorAll('[data-chart="donut"]').forEach(donut);

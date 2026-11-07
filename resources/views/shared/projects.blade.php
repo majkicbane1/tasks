@@ -1,8 +1,8 @@
 <x-layouts.shared :title="$client->company_name" eyebrow="Projekti">
     <x-slot:nav>
         <nav class="flex gap-2">
-            <a rel="nofollow" href="{{ route('shared.dashboard', $shareToken) }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold">Pregled</a>
-            <a rel="nofollow" href="{{ route('shared.projects', $shareToken) }}" class="rounded-lg bg-teal-600 px-3 py-2 text-sm font-semibold text-white">Projekti</a>
+            <a rel="nofollow" href="{{ route('shared.dashboard', $shareToken) }}" class="btn">Pregled</a>
+            <a rel="nofollow" href="{{ route('shared.projects', $shareToken) }}" class="btn btn-primary">Projekti</a>
         </nav>
     </x-slot:nav>
 

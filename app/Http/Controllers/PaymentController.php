@@ -16,6 +16,10 @@ class PaymentController extends Controller
 
     public function create(Request $request)
     {
+        if (! $request->filled('client_id')) {
+            return view('payments.pick-client', ['clients' => Client::orderBy('company_name')->get()]);
+        }
+
         $client = Client::with('projects')->findOrFail($request->integer('client_id'));
 
         return view('payments.create', ['payment' => new Payment(), 'client' => $client]);

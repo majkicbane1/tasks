@@ -1,8 +1,8 @@
 <x-layouts.shared :title="$client->company_name" eyebrow="Podeljeni pregled">
     <x-slot:nav>
         <nav class="flex gap-2">
-            <a rel="nofollow" href="{{ route('shared.dashboard', $shareToken) }}" class="rounded-lg bg-teal-600 px-3 py-2 text-sm font-semibold text-white">Pregled</a>
-            <a rel="nofollow" href="{{ route('shared.projects', $shareToken) }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold">Projekti</a>
+            <a rel="nofollow" href="{{ route('shared.dashboard', $shareToken) }}" class="btn btn-primary">Pregled</a>
+            <a rel="nofollow" href="{{ route('shared.projects', $shareToken) }}" class="btn">Projekti</a>
         </nav>
     </x-slot:nav>
 
@@ -18,7 +18,7 @@
         @include('partials.stat-card', ['label' => 'Preostalo', 'value' => $money($client->balance, $cur), 'color' => '#d6455d', 'hint' => 'Za uplatu', 'icon' => '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'])
     </div>
     @include('partials.insights', ['series' => $series, 'currency' => $cur, 'paid' => $client->total_payments, 'billed' => $billed])
-    <div class="mt-6 grid gap-6 xl:grid-cols-2">
+    <div class="grid grid-cols-1 items-start gap-5 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div>
             @include('projects.partials.work-table', ['entries' => $workEntries, 'readonly' => true, 'currency' => $client->currency, 'showProject' => true])
         </div>

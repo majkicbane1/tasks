@@ -19,17 +19,17 @@
         @enderror
         <label class="mb-4 block">
             <span class="mb-1 block text-sm font-medium">Email</span>
-            <input name="email" type="email" value="{{ old('email') }}" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base outline-none focus:border-teal-600" required autofocus>
+            <input name="email" type="email" value="{{ old('email') }}" class="w-full field px-3 py-2.5 text-base outline-none focus:border-teal-600" required autofocus>
         </label>
         <label class="mb-4 block">
             <span class="mb-1 block text-sm font-medium">Lozinka</span>
-            <input name="password" type="password" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base outline-none focus:border-teal-600" required>
+            <input name="password" type="password" class="w-full field px-3 py-2.5 text-base outline-none focus:border-teal-600" required>
         </label>
         <label class="mb-5 flex items-center gap-2 text-sm text-slate-600">
             <input name="remember" type="checkbox" value="1" class="rounded border-slate-300 text-teal-600">
             Zapamti me
         </label>
-        <button class="w-full rounded-lg bg-teal-600 px-4 py-3 font-semibold text-white hover:bg-teal-700">Uđi u panel</button>
+        <button class="btn btn-primary w-full !h-12">Uđi u panel</button>
         <p class="mt-4 text-xs text-slate-500">Demo: admin@uizzard.rs / password123</p>
     </form>
 </body>

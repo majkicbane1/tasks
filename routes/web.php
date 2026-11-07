@@ -6,9 +6,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SharedClientController;
 use App\Http\Controllers\WorkEntryController;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -35,11 +35,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/exports', [ExportController::class, 'index'])->name('exports.index');
         Route::get('/exports/{type}', [ExportController::class, 'download'])->name('exports.download');
 
-        Route::get('/migration', function () {
-            Artisan::call('migrate', ['--force' => true]);
-
-            return response(nl2br(e(Artisan::output())));
-        })->name('maintenance.migrate');
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::post('/settings/migrate', [SettingsController::class, 'migrate'])->name('settings.migrate');
+        Route::post('/settings/cache', [SettingsController::class, 'clearCache'])->name('settings.cache');
+        // old GET endpoint ran migrations just by opening the URL; now it only redirects
+        Route::get('/migration', fn () => redirect()->route('settings.index'))->name('maintenance.migrate');
 
         Route::resource('clients', ClientController::class);
         Route::post('/clients/{client}/users', [ClientController::class, 'storeUser'])

@@ -2,13 +2,13 @@
     @php($currency = $project->client->currency)
     @if(auth()->user()->isSuperAdmin())
         <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <a href="{{ route('work-entries.create', ['project_id' => $project->id]) }}" class="rounded-lg bg-teal-600 px-4 py-2.5 text-center text-sm font-semibold text-white">+ Stavka posla</a>
-            <a href="{{ route('payments.create', ['client_id' => $project->client_id]) }}" class="rounded-lg border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold">+ Uplata</a>
-            <a href="{{ route('projects.edit', $project) }}" class="rounded-lg border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold">Izmeni projekat</a>
+            <a href="{{ route('work-entries.create', ['project_id' => $project->id]) }}" class="btn btn-primary">+ Stavka posla</a>
+            <a href="{{ route('payments.create', ['client_id' => $project->client_id]) }}" class="btn">+ Uplata</a>
+            <a href="{{ route('projects.edit', $project) }}" class="btn">Izmeni projekat</a>
             <form method="POST" action="{{ route('projects.destroy', $project) }}" onsubmit="return confirm('Obrisati projekat i sve njegove stavke?')">
                 @csrf
                 @method('DELETE')
-                <button class="w-full rounded-lg border border-rose-300 px-4 py-2.5 text-center text-sm font-semibold text-rose-700 hover:bg-rose-50 sm:w-auto">Obrisi projekat</button>
+                <button class="btn btn-danger w-full sm:w-auto">Obrisi projekat</button>
             </form>
         </div>
     @endif

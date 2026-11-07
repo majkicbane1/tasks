@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-full bg-[#ececf0] font-sans text-slate-900 antialiased">
-    <main class="mx-auto min-h-screen max-w-7xl space-y-5 p-3 sm:p-5 lg:p-8">
+    <main class="min-h-screen w-full space-y-5 p-3 sm:p-5 lg:p-8">
         <header class="card flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-teal-700">{{ $eyebrow ?? 'Podeljeni pregled' }}</p>

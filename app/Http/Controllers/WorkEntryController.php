@@ -26,7 +26,7 @@ class WorkEntryController extends Controller
         $data = $this->validatedEntry($request);
         $project = Project::with('client')->findOrFail($data['project_id']);
         $data = $this->withCalculatedAmount($data, $project);
-        $data['sort_order'] = ((int) WorkEntry::where('project_id', $project->id)->max('sort_order')) + 10;
+        $data['sort_order'] = ((int) WorkEntry::max('sort_order')) + 10;
 
         $entry = WorkEntry::create($data);
 
