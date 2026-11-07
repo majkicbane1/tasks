@@ -40,7 +40,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/leave', [LeaveController::class, 'index'])->name('leave.index');
         Route::post('/leave', [LeaveController::class, 'store'])->name('leave.store');
-        Route::delete('/leave/{leaveDay}', [LeaveController::class, 'destroy'])->whereNumber('leaveDay')->name('leave.destroy');
+        Route::delete('/leave', [LeaveController::class, 'bulkDestroy'])->name('leave.bulk-destroy');
+        Route::delete('/leave/{leaveDay}',[LeaveController::class, 'destroy'])->whereNumber('leaveDay')->name('leave.destroy');
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('/settings/migrate', [SettingsController::class, 'migrate'])->name('settings.migrate');

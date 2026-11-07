@@ -37,6 +37,10 @@
             <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <h2 class="text-xl font-semibold capitalize tracking-tight">{{ $monthLabel }}</h2>
                 <div class="flex items-center gap-2">
+                    <button type="button" id="leaveSelectToggle" class="btn !h-10" title="Biraj više dana klikom i Shift + klikom">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        <span>Izaberi</span>
+                    </button>
                     <a href="{{ route('leave.index', ['m' => $prev]) }}" class="icon-btn" aria-label="Prethodni mesec"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
                     <a href="{{ route('leave.index') }}" class="btn !h-10">Danas</a>
                     <a href="{{ route('leave.index', ['m' => $next]) }}" class="icon-btn" aria-label="Sledeći mesec"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a>
@@ -60,6 +64,7 @@
                             data-pretty="{{ $day->copy()->locale('sr_Latn')->translatedFormat('l, j. F Y.') }}"
                             data-portion="{{ $leave?->portionKey() }}"
                             data-note="{{ $leave?->note }}"
+                            data-id="{{ $leave?->id }}"
                             data-delete="{{ $leave ? route('leave.destroy', $leave) : '' }}"
                             class="cal-cell {{ $inMonth ? '' : 'out' }} {{ $day->isWeekend() ? 'weekend' : '' }} {{ $key === $today ? 'today' : '' }} {{ $leave ? 'has' : '' }}">
                             @if($leave)<span class="cal-fill" style="--p: {{ (float) $leave->portion * 100 }}%"></span>@endif
@@ -109,23 +114,30 @@
             </section>
 
             <section class="card rise overflow-hidden">
-                <div class="flex items-center justify-between p-5 sm:px-6">
-                    <h2 class="text-lg font-semibold">Unosi {{ $month->year }}</h2>
-                    <span class="chip bg-surface text-slate-700 ring-1 ring-slate-200">{{ $yearDays->count() }}</span>
+                <div class="flex flex-wrap items-center justify-between gap-2 p-5 sm:px-6">
+                    <div class="flex items-center gap-2.5">
+                        <h2 class="text-lg font-semibold">Unosi {{ $month->year }}</h2>
+                        <span class="chip bg-surface text-slate-700 ring-1 ring-slate-200">{{ $yearDays->count() }}</span>
+                    </div>
+                    @if($yearDays->isNotEmpty())
+                        <button type="button" id="leaveSelectMonth" class="btn !h-9 !rounded-xl !px-3 text-xs" title="Izaberi sve unose u prikazanom mesecu">Ceo mesec</button>
+                    @endif
                 </div>
-                <div class="max-h-96 divide-y divide-slate-100 overflow-auto border-t border-slate-100">
+                @if($yearDays->isNotEmpty())
+                    <label class="flex cursor-pointer items-center gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-2.5 text-xs font-medium text-slate-500 sm:px-6">
+                        <input type="checkbox" id="leaveSelectAll" class="h-4 w-4 cursor-pointer rounded border-slate-300 accent-[#2fa862]">
+                        Izaberi sve u {{ $month->year }}. <span class="font-normal text-slate-400">(Shift + klik za opseg)</span>
+                    </label>
+                @endif
+                <div id="leaveList" class="max-h-96 divide-y divide-slate-100 overflow-auto border-t border-slate-100">
                     @forelse($yearDays as $d)
-                        <div class="flex items-center gap-3 px-5 py-3 sm:px-6">
+                        <div class="leave-row flex items-center gap-3 px-5 py-3 transition sm:px-6" data-leave-row>
+                            <input type="checkbox" value="{{ $d->id }}" data-leave-item data-month="{{ $d->date->format('Y-m') }}" class="h-4 w-4 shrink-0 cursor-pointer rounded border-slate-300 accent-[#2fa862]" aria-label="Izaberi {{ $d->date->format('d.m.Y.') }}">
                             <span class="cal-badge shrink-0">{{ $d->symbol() }}</span>
                             <a href="{{ route('leave.index', ['m' => $d->date->format('Y-m')]) }}" class="min-w-0 flex-1">
                                 <span class="block text-sm font-medium">{{ $d->date->copy()->locale('sr_Latn')->translatedFormat('D, j. M') }}</span>
                                 <span class="block truncate text-xs text-slate-500">{{ $d->label() }}@if($d->note) · {{ $d->note }}@endif</span>
                             </a>
-                            <form method="POST" action="{{ route('leave.destroy', $d) }}" onsubmit="return confirm('Obrisati ovaj dan?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="icon-sm danger" title="Obriši"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg></button>
-                            </form>
                         </div>
                     @empty
                         <p class="p-6 text-sm text-slate-500">Još nema unetih dana za {{ $month->year }}.</p>
@@ -162,13 +174,122 @@
     </dialog>
     <form id="leaveDeleteForm" method="POST" hidden>@csrf @method('DELETE')</form>
 
+    {{-- Delete several days at once (ids are added by the script from the selection) --}}
+    <form id="leaveBulkForm" method="POST" action="{{ route('leave.bulk-destroy') }}" hidden>
+        @csrf
+        @method('DELETE')
+        <input type="hidden" name="m" value="{{ $month->format('Y-m') }}">
+    </form>
+    <div data-bulk-bar id="leaveBar" class="fixed bottom-4 left-1/2 z-50 hidden w-[min(34rem,calc(100vw_-_1.5rem))] items-center gap-3 rounded-2xl border border-slate-200 bg-surface/95 p-3 pl-4 shadow-[0_20px_50px_-15px_rgb(20_20_26/.35)] backdrop-blur lg:left-[calc(50%_+_9.5rem)]">
+        <span class="whitespace-nowrap text-sm font-semibold"><span id="leaveCount" class="inline-grid h-6 min-w-6 place-items-center rounded-full bg-teal-600 px-2 text-xs text-white">0</span> <span class="ml-1">izabrano</span></span>
+        <span class="flex-1"></span>
+        <button type="button" id="leaveBulkDelete" class="btn btn-danger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg> Obriši izabrane
+        </button>
+        <button type="button" id="leaveBulkClear" class="icon-sm" title="Poništi izbor (Esc)"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
     <script>
         (() => {
             const dlg = document.getElementById('leaveDialog');
             const del = document.getElementById('leaveDeleteForm');
             const delBtn = document.getElementById('leaveDeleteBtn');
+            // ---- selection (list checkboxes + calendar "Izaberi" mode), Shift+click selects a range ----
+            const sel = new Set();
+            let selecting = false;
+            let last = null;
+            const grid = document.querySelector('[data-leave-cell]')?.parentElement;
+            const bar = document.getElementById('leaveBar');
+            const toggleBtn = document.getElementById('leaveSelectToggle');
+            const listItems = () => [...document.querySelectorAll('[data-leave-item]')];
+            const cellItems = () => [...document.querySelectorAll('[data-leave-cell][data-id]')].filter((c) => c.dataset.id);
+
+            const render = () => {
+                listItems().forEach((cb) => {
+                    cb.checked = sel.has(cb.value);
+                    cb.closest('[data-leave-row]').classList.toggle('sel', cb.checked);
+                });
+                document.querySelectorAll('[data-leave-cell]').forEach((c) => c.classList.toggle('sel', !!c.dataset.id && sel.has(c.dataset.id)));
+                const all = document.getElementById('leaveSelectAll');
+                if (all) {
+                    const items = listItems();
+                    all.checked = items.length > 0 && items.every((i) => sel.has(i.value));
+                    all.indeterminate = !all.checked && items.some((i) => sel.has(i.value));
+                }
+                document.getElementById('leaveCount').textContent = sel.size;
+                bar.classList.toggle('hidden', sel.size === 0);
+            };
+            const range = (list, from, to, on) => {
+                const a = list.indexOf(from), b = list.indexOf(to);
+                if (a < 0 || b < 0) return false;
+                list.slice(Math.min(a, b), Math.max(a, b) + 1).forEach((i) => (on ? sel.add(idOf(i)) : sel.delete(idOf(i))));
+                return true;
+            };
+            const idOf = (el) => el.dataset.id ?? el.value;
+
+            document.addEventListener('mousedown', (e) => {
+                if (e.shiftKey && e.target.closest('[data-leave-row], [data-leave-cell]')) e.preventDefault();
+            });
+
+            // list checkboxes
+            document.getElementById('leaveList')?.addEventListener('click', (e) => {
+                const cb = e.target.closest('[data-leave-item]');
+                if (!cb) return;
+                if (e.shiftKey && last && last.kind === 'list' && listItems().includes(last.el)) {
+                    range(listItems(), last.el, cb, cb.checked);
+                } else {
+                    cb.checked ? sel.add(cb.value) : sel.delete(cb.value);
+                }
+                last = { kind: 'list', el: cb };
+                render();
+            });
+            document.getElementById('leaveSelectAll')?.addEventListener('change', (e) => {
+                listItems().forEach((i) => (e.target.checked ? sel.add(i.value) : sel.delete(i.value)));
+                render();
+            });
+            document.getElementById('leaveSelectMonth')?.addEventListener('click', () => {
+                const month = @json($month->format('Y-m'));
+                const items = listItems().filter((i) => i.dataset.month === month);
+                if (!items.length) return;
+                items.forEach((i) => sel.add(i.value));
+                render();
+            });
+
+            // calendar selection mode
+            const setMode = (on) => {
+                selecting = on;
+                grid?.classList.toggle('selecting', on);
+                toggleBtn.classList.toggle('btn-soft', on);
+                toggleBtn.querySelector('span').textContent = on ? 'Gotovo' : 'Izaberi';
+            };
+            toggleBtn.addEventListener('click', () => setMode(!selecting));
+
+            document.getElementById('leaveBulkClear').addEventListener('click', () => { sel.clear(); render(); });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sel.size && !dlg.open) { sel.clear(); render(); }
+            });
+            document.getElementById('leaveBulkDelete').addEventListener('click', () => {
+                if (!sel.size || !confirm('Obrisati izabrane dane (' + sel.size + ')? Ovo se ne može vratiti.')) return;
+                const form = document.getElementById('leaveBulkForm');
+                form.querySelectorAll('[data-gen]').forEach((n) => n.remove());
+                sel.forEach((id) => form.insertAdjacentHTML('beforeend', '<input type="hidden" data-gen name="ids[]" value="' + id + '">'));
+                form.submit();
+            });
+
             document.querySelectorAll('[data-leave-cell]').forEach((cell) => {
-                cell.addEventListener('click', () => {
+                cell.addEventListener('click', (e) => {
+                    if (selecting) {
+                        if (!cell.dataset.id) return;
+                        const on = !sel.has(cell.dataset.id);
+                        if (e.shiftKey && last && last.kind === 'cell') {
+                            range(cellItems(), last.el, cell, on);
+                        } else {
+                            on ? sel.add(cell.dataset.id) : sel.delete(cell.dataset.id);
+                        }
+                        last = { kind: 'cell', el: cell };
+                        render();
+                        return;
+                    }
                     document.getElementById('leaveDate').value = cell.dataset.date;
                     document.getElementById('leavePretty').textContent = cell.dataset.pretty;
                     document.getElementById('leaveNote').value = cell.dataset.note || '';

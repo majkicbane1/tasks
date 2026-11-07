@@ -75,6 +75,22 @@ class LeaveController extends Controller
             ->with('status', $count === 1 ? 'Dan je sačuvan.' : "Sačuvano dana: {$count}.");
     }
 
+    /** Deletes several days at once (selected in the calendar or in the list). */
+    public function bulkDestroy(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:500'],
+            'ids.*' => ['integer'],
+            'm' => ['nullable', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
+        ]);
+
+        $deleted = LeaveDay::whereIn('id', $data['ids'])->delete();
+
+        return redirect()
+            ->route('leave.index', array_filter(['m' => $data['m'] ?? null]))
+            ->with('status', $deleted === 1 ? 'Obrisan je 1 dan.' : "Obrisano dana: {$deleted}.");
+    }
+
     public function destroy(LeaveDay $leaveDay)
     {
         $month = $leaveDay->date->format('Y-m');
