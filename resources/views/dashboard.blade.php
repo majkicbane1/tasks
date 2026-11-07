@@ -3,7 +3,7 @@
         $currency = 'EUR';
         $months = $series['months'];
         $spark = fn ($k) => array_column($months, $k);
-        $palette = ['#cd5e40', '#e08b70', '#eeb4a1', '#9a9aa8', '#c9c9d2', '#f3d5ca'];
+        $palette = ['#2fa862', '#5cc68a', '#9ddbb8', '#7b8a80', '#b9c4bc', '#d8efe2'];
         $rows = $clients->map(function ($c) {
             $work = $c->total_work_amount; $exp = $c->total_expenses; $paid = $c->total_payments;
             $total = $work + $exp;
@@ -25,9 +25,9 @@
     </div>
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        @include('partials.stat-card', ['label' => 'Ukupno poslova', 'value' => $money($stats['work'], $currency), 'trend' => $trends['work'], 'spark' => $spark('work'), 'color' => '#cd5e40', 'hint' => $stats['projects'].' projekata',
+        @include('partials.stat-card', ['label' => 'Ukupno poslova', 'value' => $money($stats['work'], $currency), 'trend' => $trends['work'], 'spark' => $spark('work'), 'color' => '#2fa862', 'hint' => $stats['projects'].' projekata',
             'icon' => '<path d="M20 7h-9M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>'])
-        @include('partials.stat-card', ['label' => 'Plaćeno', 'value' => $money($stats['paid'], $currency), 'trend' => $trends['paid'], 'spark' => $spark('paid'), 'color' => '#1f9d63', 'hint' => 'Naplaćene uplate',
+        @include('partials.stat-card', ['label' => 'Plaćeno', 'value' => $money($stats['paid'], $currency), 'trend' => $trends['paid'], 'spark' => $spark('paid'), 'color' => '#3b8fd9', 'hint' => 'Naplaćene uplate',
             'icon' => '<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/>'])
         @include('partials.stat-card', ['label' => 'Troškovi', 'value' => $money($stats['expenses'], $currency), 'trend' => $trends['expenses'], 'trendGood' => false, 'spark' => $spark('expenses'), 'color' => '#e0a21b', 'hint' => 'Prefakturisani troškovi',
             'icon' => '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'])
@@ -62,7 +62,7 @@
                 <div class="flex items-center gap-2">
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-                        <input data-filter="[data-client-row]" placeholder="Pretraga" class="w-44 rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-teal-300">
+                        <input data-filter="[data-client-row]" placeholder="Pretraga" class="w-44 rounded-xl border border-slate-200 bg-surface py-2 pl-9 pr-3 text-sm outline-none focus:border-teal-300">
                     </div>
                     <a href="{{ route('clients.index') }}" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium hover:bg-slate-50">Svi</a>
                 </div>
@@ -103,9 +103,9 @@
         </div>
         <div class="grid gap-3 px-5 pb-5 sm:grid-cols-2 sm:px-6 sm:pb-6 xl:grid-cols-4">
             @forelse($projects as $project)
-                <a href="{{ route('projects.show', $project) }}" class="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition hover:-translate-y-0.5 hover:border-teal-200 hover:bg-white hover:shadow-md">
+                <a href="{{ route('projects.show', $project) }}" class="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 transition hover:-translate-y-0.5 hover:border-teal-200 hover:bg-surface hover:shadow-md">
                     <div class="flex items-center justify-between gap-2">
-                        <span class="chip bg-white text-slate-600 ring-1 ring-slate-200">{{ ucfirst($project->status) }}</span>
+                        <span class="chip bg-surface text-slate-600 ring-1 ring-slate-200">{{ ucfirst($project->status) }}</span>
                     </div>
                     <div class="mt-3 truncate font-medium">{{ $project->name }}</div>
                     <div class="truncate text-sm text-slate-500">{{ $project->client->company_name }}</div>

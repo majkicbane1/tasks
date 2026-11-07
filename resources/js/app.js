@@ -1,5 +1,7 @@
+import { initBulk } from './bulk.js';
+
 const NS = 'http://www.w3.org/2000/svg';
-const ACCENT = '#cd5e40';
+const ACCENT = '#2fa862';
 
 const el = (tag, attrs = {}, parent) => {
     const n = document.createElementNS(NS, tag);
@@ -48,28 +50,28 @@ function barChart(root) {
 
         const defs = el('defs', {}, svg);
         const pat = el('pattern', { id: 'stripe', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
-        el('rect', { width: 6, height: 6, fill: '#f4f4f7' }, pat);
-        el('rect', { width: 2.4, height: 6, fill: '#dedee5' }, pat);
+        el('rect', { width: 6, height: 6, fill: 'var(--c-stripe-a)' }, pat);
+        el('rect', { width: 2.4, height: 6, fill: 'var(--c-stripe-b)' }, pat);
         const g = el('linearGradient', { id: 'hot', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
         el('stop', { offset: '0%', 'stop-color': ACCENT }, g);
         el('stop', { offset: '100%', 'stop-color': ACCENT, 'stop-opacity': 0.15 }, g);
 
         for (let i = 0; i <= 4; i++) {
             const y = m.t + ih - (ih * i) / 4;
-            el('line', { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: '#e4e4ea', 'stroke-dasharray': '4 5' }, svg);
-            el('text', { x: m.l - 10, y: y + 4, 'text-anchor': 'end', 'font-size': 12, fill: '#6b6b78' }, svg).textContent = short((top * i) / 4);
+            el('line', { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: 'var(--c-grid)', 'stroke-dasharray': '4 5' }, svg);
+            el('text', { x: m.l - 10, y: y + 4, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--c-label)' }, svg).textContent = short((top * i) / 4);
         }
 
         const slot = iw / rows.length, bw = Math.min(34, slot * 0.58);
         const bars = [];
-        const dot = el('circle', { r: 6, fill: '#fff', stroke: ACCENT, 'stroke-width': 3, opacity: 0 }, svg);
+        const dot = el('circle', { r: 6, fill: 'var(--surface)', stroke: ACCENT, 'stroke-width': 3, opacity: 0 }, svg);
 
         rows.forEach((r, i) => {
             const h = Math.max(vals[i] > 0 ? 6 : 0, (vals[i] / top) * ih);
             const x = m.l + slot * i + (slot - bw) / 2, y = m.t + ih - h;
             const bar = el('rect', { x, y, width: bw, height: h, rx: Math.min(bw / 2, h / 2), fill: 'url(#stripe)', class: 'bar-grow', style: `animation-delay:${i * 35}ms` }, svg);
             bars.push({ bar, x, y });
-            el('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle', 'font-size': 12, fill: '#6b6b78' }, svg).textContent = r.label;
+            el('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--c-label)' }, svg).textContent = r.label;
             const hit = el('rect', { x: m.l + slot * i, y: m.t, width: slot, height: ih + 6, fill: 'transparent', style: 'cursor:pointer' }, svg);
             hit.addEventListener('mouseenter', () => focus(i));
             hit.addEventListener('click', () => focus(i));
@@ -132,16 +134,16 @@ function gauge(root) {
         const [x1, y1] = pt(s + ds, Ro), [x2, y2] = pt(e - ds, Ro), [x3, y3] = pt(e - di, Ri), [x4, y4] = pt(s + di, Ri);
         const on = i < filled;
         const op = on ? 1 - 0.6 * (i / (N - 1)) : 1;
-        const fill = on ? ACCENT : '#f1f1f4';
+        const fill = on ? ACCENT : 'var(--c-track)';
         el('path', {
             d: `M${x1} ${y1} A${Ro} ${Ro} 0 0 1 ${x2} ${y2} L${x3} ${y3} A${Ri} ${Ri} 0 0 0 ${x4} ${y4}Z`,
             fill, stroke: fill, opacity: op, 'stroke-width': cr * 2, 'stroke-linejoin': 'round',
             class: 'seg-pop', style: `animation-delay:${i * 55}ms`,
         }, svg);
     }
-    el('text', { x: cx, y: cy - 36, 'text-anchor': 'middle', 'font-size': 40, 'font-weight': 600, fill: '#14141a' }, svg).textContent =
+    el('text', { x: cx, y: cy - 36, 'text-anchor': 'middle', 'font-size': 40, 'font-weight': 600, fill: 'var(--ink)' }, svg).textContent =
         pct.toFixed(1).replace('.0', '') + '%';
-    el('text', { x: cx, y: cy - 12, 'text-anchor': 'middle', 'font-size': 13, fill: '#6b6b78' }, svg).textContent = root.dataset.label || '';
+    el('text', { x: cx, y: cy - 12, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--c-label)' }, svg).textContent = root.dataset.label || '';
 }
 
 /* ---------- Donut ---------- */
@@ -154,9 +156,9 @@ function donut(root) {
     const total = items.reduce((a, i) => a + i.value, 0);
     const S = 190, c = S / 2, R = 76, sw = 22, C = 2 * Math.PI * R;
     const svg = el('svg', { viewBox: `0 0 ${S} ${S}`, width: S, height: S }, root);
-    el('circle', { cx: c, cy: c, r: R, fill: 'none', stroke: '#f1f1f4', 'stroke-width': sw }, svg);
-    const center = el('text', { x: c, y: c + 4, 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 600, fill: '#14141a' }, svg);
-    const sub = el('text', { x: c, y: c + 22, 'text-anchor': 'middle', 'font-size': 11, fill: '#6b6b78' }, svg);
+    el('circle', { cx: c, cy: c, r: R, fill: 'none', stroke: 'var(--c-track)', 'stroke-width': sw }, svg);
+    const center = el('text', { x: c, y: c + 4, 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 600, fill: 'var(--ink)' }, svg);
+    const sub = el('text', { x: c, y: c + 22, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--c-label)' }, svg);
     const reset = () => { center.textContent = short(total); sub.textContent = root.dataset.label || 'Ukupno'; };
     reset();
     let off = 0;
@@ -222,6 +224,18 @@ function copyButton(btn) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-copy]').forEach(copyButton);
+    initBulk();
+
+    // theme toggle (light / dark), remembered in localStorage
+    document.querySelectorAll('[data-theme-toggle]').forEach((btn) =>
+        btn.addEventListener('click', () => {
+            const root = document.documentElement;
+            root.classList.add('theme-anim');
+            const dark = root.classList.toggle('dark');
+            try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch { /* private mode */ }
+            setTimeout(() => root.classList.remove('theme-anim'), 300);
+        }),
+    );
     document.querySelectorAll('[data-chart="bars"]').forEach(barChart);
     document.querySelectorAll('[data-chart="gauge"]').forEach(gauge);
     document.querySelectorAll('[data-chart="donut"]').forEach(donut);

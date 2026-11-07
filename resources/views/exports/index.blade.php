@@ -4,7 +4,7 @@
         <form method="GET" action="{{ route('exports.index') }}" class="mt-4 flex flex-wrap items-end gap-3">
             <div>
                 <label for="client_id" class="mb-1 block text-sm font-medium">Klijent</label>
-                <select id="client_id" name="client_id" class="w-full field bg-white px-3 py-2 sm:w-80">
+                <select id="client_id" name="client_id" class="w-full field bg-surface px-3 py-2 sm:w-80">
                     <option value="">Svi klijenti</option>
                     @foreach($clients as $client)
                         <option value="{{ $client->id }}" @selected((string) $clientId === (string) $client->id)>{{ $client->company_name }}</option>

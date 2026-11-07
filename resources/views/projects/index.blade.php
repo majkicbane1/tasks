@@ -1,6 +1,6 @@
 <x-layouts.app title="Projekti" active="projects" eyebrow="Evidencija">
     <div class="flex flex-wrap items-center justify-between gap-3">
-        <span class="chip bg-white text-slate-700 ring-1 ring-slate-200">{{ $projects->total() }} {{ $projects->total() === 1 ? 'projekat' : 'projekata' }}</span>
+        <span class="chip bg-surface text-slate-700 ring-1 ring-slate-200">{{ $projects->total() }} {{ $projects->total() === 1 ? 'projekat' : 'projekata' }}</span>
         <div class="flex flex-wrap items-center gap-2">
             <x-export-download type="projects" />
             <a href="{{ route('projects.create') }}" class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Novi projekat</a>

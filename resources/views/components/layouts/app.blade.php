@@ -19,18 +19,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Uizzard Poslovi' }}</title>
+    @include('partials.theme-init')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-full bg-[#ececf0] font-sans text-slate-900 antialiased">
+<body class="min-h-full font-sans text-slate-900 antialiased">
     <div class="min-h-screen w-full gap-6 p-3 sm:p-5 lg:flex">
         <div id="mobileOverlay" class="fixed inset-0 z-30 hidden bg-slate-950/40 backdrop-blur-sm lg:hidden"></div>
 
         <aside id="sidebar" class="card fixed inset-y-3 left-3 z-40 flex w-72 -translate-x-[110%] flex-col p-5 transition duration-300 lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)] lg:w-[17rem] lg:shrink-0 lg:translate-x-0">
-            <a href="{{ route('dashboard') }}" class="mb-8 flex items-center gap-3 px-1">
-                <span class="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-700 text-sm font-bold text-white shadow-[0_6px_16px_-6px_rgb(205_94_64/.7)]">UP</span>
-                <span class="text-xl font-semibold tracking-tight">Uizzard</span>
-            </a>
+            <a href="{{ route('dashboard') }}" class="mb-8 block px-2 text-2xl font-bold tracking-tight text-slate-900" aria-label="uizzard">uizzard</a>
             <p class="mb-2 px-2 text-xs font-medium uppercase tracking-wider text-slate-400">Glavni meni</p>
             <nav class="space-y-1">
                 @foreach($nav as [$key, $label, $href])
@@ -71,13 +70,14 @@
                 @if($isAdmin)
                     <form method="GET" action="{{ route('clients.index') }}" class="relative min-w-0 max-w-lg flex-1">
                         <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-                        <input id="globalSearch" name="q" value="{{ request('q') }}" placeholder="Pretraži klijente…" class="w-full rounded-xl border border-slate-100 bg-slate-50 py-2.5 pl-10 pr-14 text-sm outline-none transition focus:border-teal-300 focus:bg-white">
-                        <kbd class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] text-slate-500 sm:block">Ctrl K</kbd>
+                        <input id="globalSearch" name="q" value="{{ request('q') }}" placeholder="Pretraži klijente…" class="w-full rounded-xl border border-slate-100 bg-slate-50 py-2.5 pl-10 pr-14 text-sm outline-none transition focus:border-teal-300 focus:bg-surface">
+                        <kbd class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-slate-200 bg-surface px-1.5 py-0.5 text-[11px] text-slate-500 sm:block">Ctrl K</kbd>
                     </form>
                 @else
                     <div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold text-teal-700">{{ $eyebrow ?? 'Panel' }}</p></div>
                 @endif
                 <div class="ml-auto hidden text-sm text-slate-500 sm:block">{{ now()->translatedFormat('d. m. Y.') }}</div>
+                <x-theme-toggle class="max-sm:ml-auto" />
                 <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-teal-300 to-teal-600 text-sm font-semibold text-white">{{ $initials }}</span>
             </header></div>
 

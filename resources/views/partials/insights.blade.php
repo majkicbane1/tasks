@@ -16,7 +16,7 @@
             <div class="text-3xl font-semibold tracking-tight sm:text-4xl" data-total>—</div>
             <div class="flex flex-wrap gap-4 text-sm">
                 <button type="button" data-metric="work" class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-teal-600"></span> Poslovi</button>
-                <button type="button" data-metric="paid" class="flex items-center gap-2 opacity-40"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Plaćeno</button>
+                <button type="button" data-metric="paid" class="flex items-center gap-2 opacity-40"><span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span> Plaćeno</button>
                 <button type="button" data-metric="expenses" class="flex items-center gap-2 opacity-40"><span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span> Troškovi</button>
             </div>
         </div>

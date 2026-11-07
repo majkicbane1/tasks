@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Prijava | Uizzard Poslovi</title>
+    @include('partials.theme-init')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="grid min-h-full place-items-center bg-[#ececf0] bg-[radial-gradient(60rem_30rem_at_50%_-10%,#fbe4db,transparent)] px-4 font-sans antialiased">
+<body class="grid min-h-full place-items-center bg-[radial-gradient(60rem_30rem_at_50%_-10%,rgb(42_157_92/.18),transparent)] px-4 font-sans antialiased">
+    <x-theme-toggle class="absolute right-4 top-4" />
     <form method="POST" action="{{ route('login.store') }}" class="card w-full max-w-md p-8">
         @csrf
         <div class="mb-6">
-            <div class="mb-3 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-700 font-bold text-white shadow-[0_6px_16px_-6px_rgb(205_94_64/.7)]">UP</div>
+            <div class="mb-4 text-3xl font-bold tracking-tight">uizzard</div>
             <h1 class="text-2xl font-semibold">Prijava</h1>
             <p class="mt-1 text-sm text-slate-500">Admin panel za evidenciju poslova, uplata i dugovanja.</p>
         </div>

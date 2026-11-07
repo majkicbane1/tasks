@@ -63,6 +63,11 @@ Route::middleware('auth')->group(function () {
         Route::resource('projects', ProjectController::class)->except('show');
         Route::patch('/work-entries/reorder', [WorkEntryController::class, 'reorder'])
             ->name('work-entries.reorder');
+        Route::patch('/work-entries/bulk', [WorkEntryController::class, 'bulkUpdate'])
+            ->name('work-entries.bulk');
+        Route::get('/clients/{client}/more', [ClientController::class, 'more'])
+            ->whereNumber('client')
+            ->name('clients.more');
         Route::resource('work-entries', WorkEntryController::class)->except('show');
         Route::resource('payments', PaymentController::class)->except('show');
     });

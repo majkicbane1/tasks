@@ -14,6 +14,8 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
+    private const PER_PAGE = 15;
+
     public function index(Request $request)
     {
         $q = trim((string) $request->query('q'));
@@ -59,14 +61,56 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         $client->load(['users']);
-        $workEntries = WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
+        $workPage = $this->workQuery($client)->paginate(self::PER_PAGE);
+        $paymentPage = $this->paymentQuery($client)->paginate(self::PER_PAGE);
+
+        return view('clients.show', [
+            'client' => $client,
+            'workEntries' => $workPage->getCollection(),
+            'workHasMore' => $workPage->hasMorePages(),
+            'payments' => $paymentPage->getCollection(),
+            'paymentsHasMore' => $paymentPage->hasMorePages(),
+            'moreUrl' => route('clients.more', $client, false),
+        ]);
+    }
+
+    /** AJAX "load more" for the work and payment lists on the client screen. */
+    public function more(Request $request, Client $client)
+    {
+        $type = $request->query('type');
+        abort_unless(in_array($type, ['work', 'payments'], true), 404);
+        $page = max(1, $request->integer('page', 1));
+
+        if ($type === 'work') {
+            $paginator = $this->workQuery($client)->paginate(self::PER_PAGE, ['*'], 'page', $page);
+            $data = ['canManage' => true, 'showProject' => true, 'invoiceClient' => $client, 'currency' => $client->currency];
+
+            return response()->json([
+                'rows' => $paginator->getCollection()->map(fn ($entry) => view('projects.partials.work-row', $data + ['entry' => $entry])->render())->implode(''),
+                'cards' => $paginator->getCollection()->map(fn ($entry) => view('projects.partials.work-card', $data + ['entry' => $entry])->render())->implode(''),
+                'has_more' => $paginator->hasMorePages(),
+            ]);
+        }
+
+        $paginator = $this->paymentQuery($client)->paginate(self::PER_PAGE, ['*'], 'page', $page);
+
+        return response()->json([
+            'rows' => $paginator->getCollection()->map(fn ($payment) => view('projects.partials.payment-row', ['payment' => $payment, 'currency' => $client->currency, 'readonly' => false])->render())->implode(''),
+            'has_more' => $paginator->hasMorePages(),
+        ]);
+    }
+
+    private function workQuery(Client $client)
+    {
+        return WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
             ->with('project')
             ->orderByDesc('sort_order')
-            ->orderByDesc('id')
-            ->get();
-        $payments = $client->payments()->with('project')->latest('paid_on')->get();
+            ->orderByDesc('id');
+    }
 
-        return view('clients.show', compact('client', 'workEntries', 'payments'));
+    private function paymentQuery(Client $client)
+    {
+        return $client->payments()->with('project')->latest('paid_on')->orderByDesc('id');
     }
 
     public function edit(Client $client)

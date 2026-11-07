@@ -67,15 +67,36 @@ class WorkEntryController extends Controller
             'entries.*' => ['integer', 'exists:work_entries,id'],
         ]);
 
-        $total = count($data['entries']);
+        $ids = $data['entries'];
 
-        foreach ($data['entries'] as $index => $entryId) {
+        // Only part of the list may be loaded (load more), so reuse the sort values these
+        // entries already hold and hand them out in the new order instead of renumbering.
+        $slots = WorkEntry::whereIn('id', $ids)->pluck('sort_order')->sortDesc()->values();
+        $valid = $slots->count() === count($ids) && $slots->min() > 0 && $slots->unique()->count() === $slots->count();
+
+        foreach ($ids as $index => $entryId) {
             WorkEntry::whereKey($entryId)->update([
-                'sort_order' => ($total - $index) * 10,
+                'sort_order' => $valid ? $slots[$index] : (count($ids) - $index) * 10,
             ]);
         }
 
         return response()->json(['status' => 'ok']);
+    }
+
+    public function bulkUpdate(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:work_entries,id'],
+            'worked_on' => ['required', 'date'],
+        ]);
+
+        $updated = WorkEntry::whereIn('id', $data['ids'])->update(['worked_on' => $data['worked_on']]);
+
+        return response()->json([
+            'updated' => $updated,
+            'date' => \Illuminate\Support\Carbon::parse($data['worked_on'])->format('d.m.Y.'),
+        ]);
     }
 
     private function validatedEntry(Request $request): array

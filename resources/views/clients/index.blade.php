@@ -10,7 +10,7 @@
 
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3 text-sm text-slate-500">
-            <span class="chip bg-white text-slate-700 ring-1 ring-slate-200">{{ $clients->total() }} {{ $clients->total() === 1 ? 'klijent' : 'klijenata' }}</span>
+            <span class="chip bg-surface text-slate-700 ring-1 ring-slate-200">{{ $clients->total() }} {{ $clients->total() === 1 ? 'klijent' : 'klijenata' }}</span>
             @if(request('q'))
                 <span>Pretraga: <strong class="text-slate-800">{{ request('q') }}</strong> <a href="{{ route('clients.index') }}" class="ml-1 text-teal-700 hover:underline">poništi</a></span>
             @endif

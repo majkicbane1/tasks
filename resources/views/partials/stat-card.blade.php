@@ -1,5 +1,5 @@
 @php
-    $color = $color ?? '#cd5e40';
+    $color = $color ?? '#2fa862';
     $trend = $trend ?? null;
 @endphp
 <div class="card rise p-5">
