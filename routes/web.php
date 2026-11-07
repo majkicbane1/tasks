@@ -18,6 +18,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SharedClientController;
 use App\Http\Controllers\TwoFactorChallengeController;
+use App\Http\Controllers\UpgradeController;
 use App\Http\Controllers\WorkEntryController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 // signed in, but possibly not verified yet
 Route::middleware('auth')->group(function () {
+    // one-time upgrade for the pre-multi-tenant admin; 404 once the tenants table exists
+    Route::get('/migration', [UpgradeController::class, 'show'])->name('upgrade.show');
+    Route::post('/migration', [UpgradeController::class, 'run'])->name('upgrade.run');
+
     Route::get('/email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
         ->middleware('signed')->name('verification.verify');

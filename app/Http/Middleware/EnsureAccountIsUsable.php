@@ -19,6 +19,11 @@ class EnsureAccountIsUsable
     {
         $user = $request->user();
 
+        // database not upgraded yet (no tenant_id column): the old admin runs the migration from the browser
+        if ($user->isSuperAdmin() && ! array_key_exists('tenant_id', $user->getAttributes())) {
+            return redirect()->route('upgrade.show');
+        }
+
         if ($user->tenant && ! $user->tenant->is_active) {
             Auth::logout();
             $request->session()->invalidate();

@@ -82,10 +82,16 @@ return new class extends Migration
         Schema::table('leave_days', function (Blueprint $table) {
             $table->dropUnique(['tenant_id', 'date']);
             $table->unique('date');
+            $table->dropIndex(['tenant_id']);
             $table->dropColumn('tenant_id');
         });
-        Schema::table('clients', fn (Blueprint $table) => $table->dropColumn('tenant_id'));
+        Schema::table('clients', function (Blueprint $table) {
+            $table->dropIndex(['tenant_id']);
+            $table->dropColumn('tenant_id');
+        });
         Schema::table('users', function (Blueprint $table) {
+            $table->dropIndex(['tenant_id']);
+            $table->dropUnique(['google_id']);
             $table->dropColumn(['tenant_id', 'google_id', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at', 'two_factor_last_step']);
         });
         Schema::dropIfExists('app_settings');
