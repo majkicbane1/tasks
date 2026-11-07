@@ -22,7 +22,7 @@ class LoginDetailsNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $mail = (new MailMessage)
-            ->subject('Podaci za prijavu - '.config('app.name'))
+            ->subject('Podaci za prijavu - uizzard')
             ->greeting('Zdravo '.$notifiable->name.',')
             ->line("Napravljen je nalog za firmu {$this->firm}.")
             ->line('Email: '.$notifiable->email)

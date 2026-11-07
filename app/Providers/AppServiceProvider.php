@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         VerifyEmail::toMailUsing(fn ($notifiable, string $url) => (new MailMessage)
             ->subject('Potvrdi email adresu')
             ->greeting('Zdravo '.$notifiable->name.',')
-            ->line('Klikni na dugme da potvrdiš email adresu za '.config('app.name').'.')
+            ->line('Klikni na dugme da potvrdiš email adresu za uizzard.')
             ->action('Potvrdi email', $url)
             ->line('Ako nisi ti napravio nalog, ignoriši ovaj mejl.'));
 

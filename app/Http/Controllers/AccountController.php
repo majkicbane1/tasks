@@ -19,7 +19,7 @@ class AccountController extends Controller
             'user' => $user,
             'settingUp' => $settingUp,
             'secret' => $settingUp ? $user->two_factor_secret : null,
-            'otpauth' => $settingUp ? Totp::uri($user->two_factor_secret, $user->email, config('app.name', 'Uizzard')) : null,
+            'otpauth' => $settingUp ? Totp::uri($user->two_factor_secret, $user->email, 'Uizzard') : null,
         ]);
     }
 

@@ -64,7 +64,7 @@ class PlatformSettingsController extends Controller
     {
         // settings were applied to the config on boot, so this uses what is stored
         try {
-            Mail::raw('Ovo je probni mejl iz '.config('app.name').'. Ako ga vidiš, slanje radi.', function ($message) use ($request) {
+            Mail::raw('Ovo je probni mejl iz aplikacije uizzard. Ako ga vidiš, slanje radi.', function ($message) use ($request) {
                 $message->to($request->user()->email)->subject('Probni mejl');
             });
         } catch (Throwable $e) {
