@@ -5,6 +5,12 @@ export function toast(message, error = false) {
     setTimeout(() => t.remove(), 2600);
 }
 
+// Server generated URLs may carry another scheme/host (proxy, www vs non-www); keep only the path
+const samePath = (url) => {
+    const u = new URL(url, window.location.href);
+    return u.pathname + u.search;
+};
+
 /* ---------- Bulk select (click, Shift+click range) + bulk date edit ---------- */
 function bulkScope(scope) {
     const sel = new Set();
@@ -69,7 +75,7 @@ function bulkScope(scope) {
         btn.disabled = true;
         try {
             const ids = [...sel];
-            const res = await fetch(scope.dataset.bulkUrl, {
+            const res = await fetch(samePath(scope.dataset.bulkUrl), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': csrf },
                 body: JSON.stringify({ ids, worked_on: date }),
@@ -108,8 +114,11 @@ function loadMore(btn) {
         btn.textContent = 'Učitavam…';
         try {
             const page = Number(btn.dataset.page);
-            const res = await fetch(`${btn.dataset.url}?type=${btn.dataset.type}&page=${page}`, { headers: { Accept: 'application/json' } });
-            if (!res.ok) throw new Error('load more failed');
+            const res = await fetch(`${samePath(btn.dataset.url)}?type=${btn.dataset.type}&page=${page}`, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const d = await res.json();
             document.querySelector(btn.dataset.rows).insertAdjacentHTML('beforeend', d.rows);
             if (d.cards && btn.dataset.cards) document.querySelector(btn.dataset.cards).insertAdjacentHTML('beforeend', d.cards);
@@ -119,8 +128,8 @@ function loadMore(btn) {
                 btn.closest('[data-more-wrap]').remove();
                 return;
             }
-        } catch {
-            toast('Učitavanje nije uspelo.', true);
+        } catch (err) {
+            toast(`Učitavanje nije uspelo (${err.message}).`, true);
         }
         btn.disabled = false;
         btn.textContent = label;

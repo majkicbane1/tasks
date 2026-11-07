@@ -42,7 +42,7 @@ class SharedClientController extends Controller
             'payments' => fn ($query) => $query->where('visible_to_client', true)->latest('paid_on'),
         ]);
 
-        return view('shared.project', compact('client', 'project', 'shareToken'));
+        return view('shared.project', ['client' => $client, 'project' => $project, 'shareToken' => $token]);
     }
 
     private function client(string $token): Client

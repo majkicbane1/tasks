@@ -3,7 +3,7 @@
     $isInvoiced = (bool) $entry->invoiced_at && ! $isPaid;
     $date = $entry->worked_on?->format('d.m.Y.') ?: '—';
 @endphp
-<tr data-entry-id="{{ $entry->id }}" @if($canManage) draggable="true" @endif class="group">
+<tr data-entry-id="{{ $entry->id }}" @if($canManage) draggable="true" @endif class="group {{ ($mutePaid ?? false) && $isPaid ? 'opacity-50' : '' }}">
     @if($canManage)
         <td class="w-8 cursor-grab !pr-0 text-slate-300 group-hover:text-slate-500" title="Prevuci za redosled"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></td>
         <td class="w-10 !pl-2 !pr-0"><input type="checkbox" value="{{ $entry->id }}" data-bulk-item data-invoiceable="{{ $entry->payment_id ? 0 : 1 }}" class="h-4 w-4 cursor-pointer rounded border-slate-300 accent-[#2fa862]" aria-label="Izaberi stavku"></td>

@@ -3,7 +3,7 @@
     $isInvoiced = (bool) $entry->invoiced_at && ! $isPaid;
     $date = $entry->worked_on?->format('d.m.Y.') ?: '—';
 @endphp
-<div class="p-4" data-entry-id="{{ $entry->id }}">
+<div class="p-4 {{ ($mutePaid ?? false) && $isPaid ? 'opacity-50' : '' }}" data-entry-id="{{ $entry->id }}">
     <div class="grid grid-cols-[minmax(0,1fr)_max-content] items-start gap-3">
         <div class="min-w-0">
             <div class="flex items-center gap-2.5">

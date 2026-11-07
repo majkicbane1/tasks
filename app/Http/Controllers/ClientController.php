@@ -70,7 +70,7 @@ class ClientController extends Controller
             'workHasMore' => $workPage->hasMorePages(),
             'payments' => $paymentPage->getCollection(),
             'paymentsHasMore' => $paymentPage->hasMorePages(),
-            'moreUrl' => route('clients.more', $client, false),
+            'moreUrl' => route('clients.more', $client),
         ]);
     }
 

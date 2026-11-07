@@ -6,7 +6,7 @@
     $hasMore = $hasMore ?? false;
 @endphp
 
-<section class="card overflow-hidden" @if($canManage) data-bulk data-bulk-url="{{ route('work-entries.bulk', [], false) }}" @endif>
+<section class="card overflow-hidden" @if($canManage) data-bulk data-bulk-url="{{ route('work-entries.bulk') }}" @endif>
     <div class="border-b border-slate-100 p-5">
         <div class="flex flex-col gap-3">
             <div>
@@ -50,7 +50,7 @@
                     @if($canManage)<th></th>@endif
                 </tr>
             </thead>
-            <tbody id="work-entry-sortable" data-bulk-group data-reorder-url="{{ $canManage ? route('work-entries.reorder', [], false) : '' }}" class="divide-y divide-slate-100/80">
+            <tbody id="work-entry-sortable" data-bulk-group data-reorder-url="{{ $canManage ? route('work-entries.reorder') : '' }}" class="divide-y divide-slate-100/80">
                 @forelse($entries as $entry)
                     @include('projects.partials.work-row')
                 @empty
