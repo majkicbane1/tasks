@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SettingsController;
@@ -18,6 +19,7 @@ Route::middleware('guest')->group(function () {
 
 Route::get('/share/{token}', [SharedClientController::class, 'dashboard'])->name('shared.dashboard');
 Route::get('/share/{token}/projects', [SharedClientController::class, 'projects'])->name('shared.projects');
+Route::get('/share/{token}/more', [SharedClientController::class, 'more'])->name('shared.more');
 Route::get('/share/{token}/projects/{project}', [SharedClientController::class, 'project'])
     ->whereNumber('project')
     ->name('shared.projects.show');
@@ -27,6 +29,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::middleware('auth')->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
     Route::get('/my-projects', [DashboardController::class, 'clientProjects'])->name('client.projects');
+    Route::get('/my-more', [DashboardController::class, 'clientMore'])->name('client.more');
     Route::patch('/payments/{payment}/paid', [PaymentController::class, 'markPaid'])
         ->whereNumber('payment')
         ->name('payments.mark-paid');
@@ -34,6 +37,10 @@ Route::middleware('auth')->group(function () {
     Route::middleware('super_admin')->group(function () {
         Route::get('/exports', [ExportController::class, 'index'])->name('exports.index');
         Route::get('/exports/{type}', [ExportController::class, 'download'])->name('exports.download');
+
+        Route::get('/leave', [LeaveController::class, 'index'])->name('leave.index');
+        Route::post('/leave', [LeaveController::class, 'store'])->name('leave.store');
+        Route::delete('/leave/{leaveDay}', [LeaveController::class, 'destroy'])->whereNumber('leaveDay')->name('leave.destroy');
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('/settings/migrate', [SettingsController::class, 'migrate'])->name('settings.migrate');

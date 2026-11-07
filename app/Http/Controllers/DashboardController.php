@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Payment;
 use App\Models\Project;
 use App\Models\WorkEntry;
+use App\Services\ClientLists;
 use App\Services\FinanceStats;
 use Illuminate\Http\Request;
 
@@ -49,17 +50,16 @@ class DashboardController extends Controller
         $client = $user->client?->load(['projects.workEntries', 'payments.project']);
         abort_unless($client, 403);
 
-        return view('client-dashboard', [
-            'client' => $client,
-            'workEntries' => WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
-                ->with('project')
-                ->where('visible_to_client', true)
-                ->orderByDesc('sort_order')
-                ->orderByDesc('id')
-                ->limit(20)
-                ->get(),
-            'payments' => $client->payments()->with('project')->where('visible_to_client', true)->latest('paid_on')->get(),
-        ]);
+        return view('client-dashboard', ['client' => $client] + ClientLists::firstPages($client, false, route('client.more')));
+    }
+
+    /** AJAX "load more" for the logged in client's own lists. */
+    public function clientMore(Request $request)
+    {
+        $client = $request->user()->client;
+        abort_unless($client && ! $request->user()->isSuperAdmin(), 403);
+
+        return ClientLists::more($request, $client, false);
     }
 
     public function clientProjects(Request $request)

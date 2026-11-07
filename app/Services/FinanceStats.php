@@ -32,18 +32,22 @@ class FinanceStats
 
         foreach ($work as $entry) {
             $add($entry->worked_on ?? $entry->created_at, 'work', (float) $entry->amount);
+            $add($entry->worked_on ?? $entry->created_at, 'count', 1.0);
         }
         foreach ($payments as $payment) {
             if ($payment->type === 'expense') {
                 $add($payment->paid_on, 'expenses', (float) $payment->amount);
             } elseif ($payment->status === 'paid') {
                 $add($payment->paid_on, 'paid', (float) $payment->amount);
+                $add($payment->paid_on, 'paymentCount', 1.0);
             }
         }
 
         $point = fn (array $r, string $label) => [
             'label' => $label,
             'work' => round($r['work'] ?? 0, 2),
+            'count' => (int) ($r['count'] ?? 0),
+            'paymentCount' => (int) ($r['paymentCount'] ?? 0),
             'paid' => round($r['paid'] ?? 0, 2),
             'expenses' => round($r['expenses'] ?? 0, 2),
         ];

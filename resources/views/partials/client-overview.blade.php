@@ -9,8 +9,8 @@
         ->where('visible_to_client', true)->whereNull('paid_at')->where('amount', '>', 0)->count();
     $openText = 'Ukupan iznos koji je preostao za uplatu' . ($openCount > 0 ? ', po ' . $openCount . ($openCount === 1 ? ' otvorenoj stavci' : ' otvorenih stavki') : '') . '.';
 
-    // only billed work goes to the page, paid / expense figures are stripped from the data on purpose
-    $workSeries = collect($series)->map(fn ($rows) => collect($rows)->map(fn ($r) => ['label' => $r['label'], 'work' => $r['work']])->all())->all();
+    // the chart gets counts only (items done / payments received per period), never amounts
+    $workSeries = collect($series)->map(fn ($rows) => collect($rows)->map(fn ($r) => ['label' => $r['label'], 'work' => $r['count'], 'paid' => $r['paymentCount']])->all())->all();
 @endphp
 
 <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
@@ -56,18 +56,18 @@
         </div>
     </section>
 
-    <section class="card rise p-5 sm:p-6" data-chart="bars" data-series='@json($workSeries)' data-currency="{{ $cur }}">
-        <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-                <h2 class="text-lg font-semibold">Obračunati poslovi</h2>
-                <p class="text-sm text-slate-500">Vrednost urađenih poslova po periodima</p>
+    <section class="card rise p-5 sm:p-6" data-chart="bars" data-series='@json($workSeries)' data-currency="{{ $cur }}" data-units='{"work":"stavki","paid":"uplata"}'>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="tabs" role="tablist">
+                <button type="button" role="tab" data-metric="work" class="tab on" aria-selected="true">Poslovi</button>
+                <button type="button" role="tab" data-metric="paid" class="tab" aria-selected="false">Uplate</button>
             </div>
             <div class="seg" data-range>
                 <button type="button" data-value="months" class="on">Mesečno</button>
                 <button type="button" data-value="years">Godišnje</button>
             </div>
         </div>
-        <div class="mt-3 text-3xl font-semibold tracking-tight" data-total>—</div>
+        <p class="mt-4 text-sm text-slate-500">Broj stavki, odnosno uplata, po periodima</p>
         <div data-stage class="relative mt-2 w-full overflow-hidden"></div>
     </section>
 </div>

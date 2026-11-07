@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\WorkEntry;
+use App\Services\ClientLists;
+use Illuminate\Http\Request;
 
 class SharedClientController extends Controller
 {
@@ -14,10 +16,14 @@ class SharedClientController extends Controller
 
         return view('shared.dashboard', [
             'client' => $client,
-            'workEntries' => $this->workEntries($client)->paginate(25),
-            'payments' => $client->payments()->with('project')->where('visible_to_client', true)->latest('paid_on')->get(),
             'shareToken' => $token,
-        ]);
+        ] + ClientLists::firstPages($client, false, route('shared.more', $token)));
+    }
+
+    /** AJAX "load more" for the lists on the shared page (read only, visible entries only). */
+    public function more(Request $request, string $token)
+    {
+        return ClientLists::more($request, $this->client($token), false);
     }
 
     public function projects(string $token)

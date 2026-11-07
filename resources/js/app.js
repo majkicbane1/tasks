@@ -28,6 +28,10 @@ function barChart(root) {
     const state = { range: 'months', metric: 'work' };
     const stage = root.querySelector('[data-stage]');
     const totalEl = root.querySelector('[data-total]');
+    // data-unit switches the chart from money to plain counts (used on client facing pages)
+    // data-units='{"work":"stavki","paid":"uplata"}' gives each tab its own unit
+    const units = root.dataset.units ? JSON.parse(root.dataset.units) : null;
+    const unitOf = () => (units ? units[state.metric] : root.dataset.unit) || null;
     const tip = document.createElement('div');
     tip.className = 'chart-tip';
     tip.style.display = 'none';
@@ -44,7 +48,8 @@ function barChart(root) {
         const W = stage.clientWidth || 320, H = 300;
         const m = { l: 44, r: 8, t: 36, b: 28 };
         const iw = W - m.l - m.r, ih = H - m.t - m.b;
-        const top = niceMax(Math.max(...vals));
+        const unit = unitOf();
+        const top = unit ? Math.max(4, Math.ceil(Math.max(...vals) / 4) * 4) : niceMax(Math.max(...vals));
         const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, style: 'max-width:100%', role: 'img', 'aria-label': 'Grafikon' });
         stage.insertBefore(svg, tip);
 
@@ -59,7 +64,7 @@ function barChart(root) {
         for (let i = 0; i <= 4; i++) {
             const y = m.t + ih - (ih * i) / 4;
             el('line', { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: 'var(--c-grid)', 'stroke-dasharray': '4 5' }, svg);
-            el('text', { x: m.l - 10, y: y + 4, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--c-label)' }, svg).textContent = short((top * i) / 4);
+            el('text', { x: m.l - 10, y: y + 4, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--c-label)' }, svg).textContent = unit ? String(Math.round((top * i) / 4)) : short((top * i) / 4);
         }
 
         const slot = iw / rows.length, bw = Math.min(34, slot * 0.58);
@@ -83,7 +88,7 @@ function barChart(root) {
             dot.setAttribute('cx', b.x + bw / 2);
             dot.setAttribute('cy', b.y);
             dot.setAttribute('opacity', vals[i] > 0 ? 1 : 0);
-            tip.textContent = fmt(vals[i], cur);
+            tip.textContent = unit ? `${vals[i]} ${unit}` : fmt(vals[i], cur);
             tip.style.display = vals[i] > 0 ? 'block' : 'none';
             tip.style.left = b.x + bw / 2 + 'px';
             tip.style.top = b.y - 12 + 'px';
@@ -102,7 +107,14 @@ function barChart(root) {
     root.querySelectorAll('[data-metric]').forEach((b) =>
         b.addEventListener('click', () => {
             state.metric = b.dataset.metric;
-            root.querySelectorAll('[data-metric]').forEach((x) => x.classList.toggle('opacity-40', x !== b));
+            root.querySelectorAll('[data-metric]').forEach((x) => {
+                if (x.classList.contains('tab')) {
+                    x.classList.toggle('on', x === b);
+                    x.setAttribute('aria-selected', x === b ? 'true' : 'false');
+                } else {
+                    x.classList.toggle('opacity-40', x !== b);
+                }
+            });
             updateTotal();
             draw();
         }),

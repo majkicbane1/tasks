@@ -10,10 +10,10 @@
 
     <div class="grid grid-cols-1 items-start gap-5 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div>
-            @include('projects.partials.work-table', ['entries' => $workEntries, 'readonly' => true, 'currency' => $client->currency, 'showProject' => true, 'mutePaid' => true])
+            @include('projects.partials.work-table', ['entries' => $workEntries, 'readonly' => true, 'currency' => $client->currency, 'showProject' => true, 'mutePaid' => true, 'moreUrl' => $moreUrl, 'hasMore' => $workHasMore])
         </div>
         <div>
-            @include('projects.partials.payments-table', ['payments' => $payments, 'readonly' => true, 'currency' => $client->currency, 'allowMarkPaid' => false])
+            @include('projects.partials.payments-table', ['payments' => $payments, 'readonly' => true, 'currency' => $client->currency, 'allowMarkPaid' => false, 'moreUrl' => $moreUrl, 'hasMore' => $paymentsHasMore])
         </div>
     </div>
 </x-layouts.shared>
