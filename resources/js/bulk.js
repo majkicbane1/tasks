@@ -159,7 +159,7 @@ function loadMore(btn) {
         btn.textContent = 'Učitavam…';
         try {
             const page = Number(btn.dataset.page);
-            const period = btn.dataset.period ? `&period=${encodeURIComponent(btn.dataset.period)}` : '';
+            const period = (btn.dataset.period ? `&period=${encodeURIComponent(btn.dataset.period)}` : '') + (btn.dataset.sort ? `&sort=${btn.dataset.sort}&dir=${btn.dataset.dir || 'asc'}` : '');
             const res = await fetch(`${samePath(btn.dataset.url)}?type=${btn.dataset.type}&page=${page}${period}`, {
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'same-origin',
@@ -181,33 +181,61 @@ function loadMore(btn) {
     });
 }
 
-/* ---------- Chart bar click -> filter the work list to that month / year ---------- */
-function periodFilter() {
+/* ---------- Work list: chart bar click (period) + header click (sort) ---------- */
+function workListControls() {
     const btn = document.querySelector('[data-load-more][data-type="work"]');
     const chip = document.querySelector('[data-period-chip]');
-    if (!btn || !chip) return;
-    const wrap = btn.closest('[data-more-wrap]');
-    const rows = document.querySelector(btn.dataset.rows);
-    const cards = btn.dataset.cards ? document.querySelector(btn.dataset.cards) : null;
+    const heads = document.querySelectorAll('[data-sort-key]');
+    const tbody = document.getElementById('work-entry-sortable');
+    if (!tbody) return;
+    const wrap = btn?.closest('[data-more-wrap]');
+    const cards = btn?.dataset.cards ? document.querySelector(btn.dataset.cards) : null;
     const empty = '<tr><td colspan="9" class="p-4 text-slate-500">Nema poslova u ovom periodu.</td></tr>';
+    const state = { period: null, sort: null, dir: 'asc' };
     let seq = 0;
 
-    const apply = async (period, label) => {
+    const query = () => {
+        const q = new URLSearchParams({ type: 'work', page: 1 });
+        if (state.period) q.set('period', state.period);
+        if (state.sort) { q.set('sort', state.sort); q.set('dir', state.dir); }
+        return q;
+    };
+    // load-more continues with the same filter and sort
+    if (btn) btn.addEventListener('click', () => syncBtn(), true);
+    const syncBtn = () => {
+        btn.dataset.period = state.period || '';
+        btn.dataset.sort = state.sort || '';
+        btn.dataset.dir = state.dir;
+    };
+
+    const markHeads = () => heads.forEach((h) => h.closest('th').setAttribute('aria-sort', h.dataset.sortKey !== state.sort ? 'none' : state.dir === 'asc' ? 'ascending' : 'descending'));
+
+    // no server paging on this table (project page): sort the rows already on the page
+    const sortLocal = () => {
+        const rows = [...tbody.querySelectorAll('tr[data-entry-id]')];
+        if (!state.sort) return;
+        const sign = state.dir === 'asc' ? 1 : -1;
+        const val = (r) => r.querySelector(`[data-col="${state.sort}"]`)?.dataset.v ?? '';
+        const num = ['hours', 'amount', 'status'].includes(state.sort);
+        rows.sort((x, y) => sign * (num ? val(x) - val(y) : val(x).localeCompare(val(y), 'sr', { numeric: true })));
+        rows.forEach((r) => tbody.appendChild(r));
+    };
+
+    const reload = async () => {
+        markHeads();
+        if (!btn) return sortLocal();
         const mine = ++seq;
-        btn.dataset.period = period || '';
+        syncBtn();
         btn.dataset.page = 2;
-        chip.classList.toggle('hidden', !period);
-        chip.querySelector('[data-period-label]').textContent = label || '';
         try {
-            const q = `?type=work&page=1${period ? `&period=${encodeURIComponent(period)}` : ''}`;
-            const res = await fetch(samePath(btn.dataset.url) + q, {
+            const res = await fetch(`${samePath(btn.dataset.url)}?${query()}`, {
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'same-origin',
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const d = await res.json();
             if (mine !== seq) return; // a newer click already won
-            rows.innerHTML = d.rows || empty;
+            tbody.innerHTML = d.rows || empty;
             if (cards) cards.innerHTML = d.cards || '<p class="p-4 text-sm text-slate-500">Nema poslova u ovom periodu.</p>';
             wrap.classList.toggle('hidden', !d.has_more);
             btn.disabled = false;
@@ -217,15 +245,36 @@ function periodFilter() {
         }
     };
 
-    document.addEventListener('chart:period', (e) => apply(e.detail.key, e.detail.label));
-    chip.addEventListener('click', () => {
-        apply(null);
-        document.dispatchEvent(new Event('chart:period-clear'));
-    });
+    // header click: ascending -> descending -> back to the default order
+    heads.forEach((h) =>
+        h.addEventListener('click', () => {
+            const k = h.dataset.sortKey;
+            if (state.sort !== k) { state.sort = k; state.dir = 'asc'; }
+            else if (state.dir === 'asc') state.dir = 'desc';
+            else state.sort = null;
+            if (!btn && !state.sort) return location.reload();
+            reload();
+        }),
+    );
+
+    if (chip) {
+        document.addEventListener('chart:period', (e) => {
+            state.period = e.detail.key;
+            chip.classList.toggle('hidden', !state.period);
+            chip.querySelector('[data-period-label]').textContent = e.detail.label || '';
+            reload();
+        });
+        chip.addEventListener('click', () => {
+            state.period = null;
+            chip.classList.add('hidden');
+            document.dispatchEvent(new Event('chart:period-clear'));
+            reload();
+        });
+    }
 }
 
 export function initBulk() {
     document.querySelectorAll('[data-bulk]').forEach(bulkScope);
     document.querySelectorAll('[data-load-more]').forEach(loadMore);
-    periodFilter();
+    workListControls();
 }

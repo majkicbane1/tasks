@@ -49,12 +49,12 @@
                         <th class="w-8 !pr-0"></th>
                         <th class="w-10 !pl-2 !pr-0"><input type="checkbox" data-bulk-all class="h-4 w-4 cursor-pointer rounded border-slate-300 accent-[#2fa862]" aria-label="Izaberi sve"></th>
                     @endif
-                    <th>Datum</th>
-                    @if($showProject)<th>Projekat</th>@endif
-                    <th>Opis</th>
-                    <th class="text-right">Sati</th>
-                    <th class="text-right">Ukupno</th>
-                    <th>Status</th>
+                    @foreach ([['date', 'Datum', ''], ['project', 'Projekat', ''], ['title', 'Opis', ''], ['hours', 'Sati', 'justify-end'], ['amount', 'Ukupno', 'justify-end'], ['status', 'Status', '']] as [$key, $label, $align])
+                        @continue($key === 'project' && ! $showProject)
+                        <th @class(['text-right' => $align]) aria-sort="none">
+                            <button type="button" data-sort-key="{{ $key }}" class="sort-btn {{ $align }}">{{ $label }}<svg viewBox="0 0 10 14" aria-hidden="true"><path class="up" d="M5 1 9 5.5H1z"/><path class="dn" d="M5 13 1 8.5h8z"/></svg></button>
+                        </th>
+                    @endforeach
                     @if($canManage)<th></th>@endif
                 </tr>
             </thead>

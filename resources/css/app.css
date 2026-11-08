@@ -233,6 +233,12 @@ body {
     }
     .dark .btn-primary { color: #04130a; }
     .btn-primary:hover { background: linear-gradient(180deg, var(--accent), var(--accent-lo)); border-color: var(--accent-lo); filter: brightness(.96); }
+    .sort-btn { display: inline-flex; align-items: center; gap: .4rem; text-transform: inherit; letter-spacing: inherit; font: inherit; color: inherit; cursor: pointer; }
+    .sort-btn:hover { color: var(--ink); }
+    .sort-btn svg { width: .5rem; height: .75rem; flex-shrink: 0; }
+    .sort-btn path { fill: currentColor; opacity: .3; }
+    th[aria-sort="ascending"] .sort-btn, th[aria-sort="descending"] .sort-btn { color: var(--ink); }
+    th[aria-sort="ascending"] .sort-btn .up, th[aria-sort="descending"] .sort-btn .dn { opacity: 1; fill: var(--accent); }
     .btn-amber {
         color: #2a1a00; font-weight: 600; background: linear-gradient(180deg, #ffb830, #f59e0b);
         border-color: #d98a06;

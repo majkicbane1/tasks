@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Client;
+use App\Models\Project;
 use App\Models\WorkEntry;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +19,7 @@ class ClientLists
     public const PER_PAGE = 15;
 
     /** $period is a chart bucket: "2026" (year) or "2026-03" (month); anything else is ignored. */
-    public static function work(Client $client, bool $admin, ?string $period = null)
+    public static function work(Client $client, bool $admin, ?string $period = null, ?string $sort = null, string $dir = 'desc')
     {
         $from = $to = null;
         if ($period && preg_match('/^\d{4}(-(0[1-9]|1[0-2]))?$/', $period)) {
@@ -30,8 +31,24 @@ class ClientLists
             ->with('project')
             ->when($from, fn ($query) => $query->whereRaw('COALESCE(worked_on, created_at) >= ? and COALESCE(worked_on, created_at) < ?', [$from, $to]))
             ->when(! $admin, fn ($query) => $query->where('visible_to_client', true))
+            ->when($sort, fn ($query) => self::applySort($query, $sort, $dir))
             ->orderByDesc('sort_order')
             ->orderByDesc('id');
+    }
+
+    /** Column sort chosen by clicking a table header; unknown keys are ignored (default order stays). */
+    private static function applySort($query, string $sort, string $dir): void
+    {
+        $dir = strtolower($dir) === 'asc' ? 'asc' : 'desc';
+        match ($sort) {
+            'date' => $query->orderByRaw("COALESCE(worked_on, created_at) $dir"),
+            'project' => $query->orderBy(Project::select('name')->whereColumn('projects.id', 'work_entries.project_id'), $dir),
+            'title' => $query->orderBy('title', $dir),
+            'hours' => $query->orderBy('hours', $dir),
+            'amount' => $query->orderBy('amount', $dir),
+            'status' => $query->orderByRaw("CASE WHEN paid_at IS NOT NULL THEN 2 WHEN invoiced_at IS NOT NULL THEN 1 ELSE 0 END $dir"),
+            default => null,
+        };
     }
 
     public static function payments(Client $client, bool $admin)
@@ -65,7 +82,7 @@ class ClientLists
         $page = max(1, $request->integer('page', 1));
 
         if ($type === 'work') {
-            $paginator = self::work($client, $admin, $request->query('period'))->paginate(self::PER_PAGE, ['*'], 'page', $page);
+            $paginator = self::work($client, $admin, $request->query('period'), $request->query('sort'), (string) $request->query('dir', 'desc'))->paginate(self::PER_PAGE, ['*'], 'page', $page);
             $data = [
                 'canManage' => $admin,
                 'showProject' => true,

@@ -8,12 +8,12 @@
         <td class="w-8 cursor-grab !pr-0 text-slate-300 group-hover:text-slate-500" title="Prevuci za redosled"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></td>
         <td class="w-10 !pl-2 !pr-0"><input type="checkbox" value="{{ $entry->id }}" data-bulk-item data-invoiceable="{{ $entry->payment_id ? 0 : 1 }}" class="h-4 w-4 cursor-pointer rounded border-slate-300 accent-[#2fa862]" aria-label="Izaberi stavku"></td>
     @endif
-    <td class="whitespace-nowrap text-slate-600" data-date-cell="{{ $entry->id }}">{{ $date }}</td>
-    @if($showProject)<td class="text-slate-600">{{ $entry->project?->name ?: '-' }}</td>@endif
-    <td><div class="font-semibold">{{ $entry->title }}</div><div class="text-xs text-slate-500">{{ $entry->description }}</div></td>
-    <td class="text-right">{{ $entry->hours ?: '-' }}</td>
-    <td class="whitespace-nowrap text-right font-semibold">{{ $money($entry->amount, $currency) }}</td>
-    <td data-status-cell="{{ $entry->id }}">
+    <td class="whitespace-nowrap text-slate-600" data-date-cell="{{ $entry->id }}" data-col="date" data-v="{{ ($entry->worked_on ?? $entry->created_at)?->format('Y-m-d') }}">{{ $date }}</td>
+    @if($showProject)<td class="text-slate-600" data-col="project" data-v="{{ $entry->project?->name }}">{{ $entry->project?->name ?: '-' }}</td>@endif
+    <td data-col="title" data-v="{{ $entry->title }}"><div class="font-semibold">{{ $entry->title }}</div><div class="text-xs text-slate-500">{{ $entry->description }}</div></td>
+    <td class="text-right" data-col="hours" data-v="{{ (float) $entry->hours }}">{{ $entry->hours ?: '-' }}</td>
+    <td class="whitespace-nowrap text-right font-semibold" data-col="amount" data-v="{{ (float) $entry->amount }}">{{ $money($entry->amount, $currency) }}</td>
+    <td data-status-cell="{{ $entry->id }}" data-col="status" data-v="{{ $isPaid ? 2 : ($isInvoiced ? 1 : 0) }}">
         @if($isPaid)
             <span class="pill pill-green">Plaćeno</span>
         @elseif($isInvoiced)
