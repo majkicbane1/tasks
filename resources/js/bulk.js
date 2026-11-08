@@ -159,7 +159,8 @@ function loadMore(btn) {
         btn.textContent = 'Učitavam…';
         try {
             const page = Number(btn.dataset.page);
-            const res = await fetch(`${samePath(btn.dataset.url)}?type=${btn.dataset.type}&page=${page}`, {
+            const period = btn.dataset.period ? `&period=${encodeURIComponent(btn.dataset.period)}` : '';
+            const res = await fetch(`${samePath(btn.dataset.url)}?type=${btn.dataset.type}&page=${page}${period}`, {
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'same-origin',
             });
@@ -170,8 +171,7 @@ function loadMore(btn) {
             btn.dataset.page = page + 1;
             document.dispatchEvent(new Event('bulk:refresh'));
             if (!d.has_more) {
-                btn.closest('[data-more-wrap]').remove();
-                return;
+                btn.closest('[data-more-wrap]').classList.add('hidden');
             }
         } catch (err) {
             toast(`Učitavanje nije uspelo (${err.message}).`, true);
@@ -181,7 +181,51 @@ function loadMore(btn) {
     });
 }
 
+/* ---------- Chart bar click -> filter the work list to that month / year ---------- */
+function periodFilter() {
+    const btn = document.querySelector('[data-load-more][data-type="work"]');
+    const chip = document.querySelector('[data-period-chip]');
+    if (!btn || !chip) return;
+    const wrap = btn.closest('[data-more-wrap]');
+    const rows = document.querySelector(btn.dataset.rows);
+    const cards = btn.dataset.cards ? document.querySelector(btn.dataset.cards) : null;
+    const empty = '<tr><td colspan="9" class="p-4 text-slate-500">Nema poslova u ovom periodu.</td></tr>';
+    let seq = 0;
+
+    const apply = async (period, label) => {
+        const mine = ++seq;
+        btn.dataset.period = period || '';
+        btn.dataset.page = 2;
+        chip.classList.toggle('hidden', !period);
+        chip.querySelector('[data-period-label]').textContent = label || '';
+        try {
+            const q = `?type=work&page=1${period ? `&period=${encodeURIComponent(period)}` : ''}`;
+            const res = await fetch(samePath(btn.dataset.url) + q, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const d = await res.json();
+            if (mine !== seq) return; // a newer click already won
+            rows.innerHTML = d.rows || empty;
+            if (cards) cards.innerHTML = d.cards || '<p class="p-4 text-sm text-slate-500">Nema poslova u ovom periodu.</p>';
+            wrap.classList.toggle('hidden', !d.has_more);
+            btn.disabled = false;
+            document.dispatchEvent(new Event('bulk:refresh'));
+        } catch (err) {
+            toast(`Učitavanje nije uspelo (${err.message}).`, true);
+        }
+    };
+
+    document.addEventListener('chart:period', (e) => apply(e.detail.key, e.detail.label));
+    chip.addEventListener('click', () => {
+        apply(null);
+        document.dispatchEvent(new Event('chart:period-clear'));
+    });
+}
+
 export function initBulk() {
     document.querySelectorAll('[data-bulk]').forEach(bulkScope);
     document.querySelectorAll('[data-load-more]').forEach(loadMore);
+    periodFilter();
 }

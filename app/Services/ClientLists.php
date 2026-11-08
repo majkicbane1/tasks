@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Client;
 use App\Models\WorkEntry;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,10 +17,18 @@ class ClientLists
 {
     public const PER_PAGE = 15;
 
-    public static function work(Client $client, bool $admin)
+    /** $period is a chart bucket: "2026" (year) or "2026-03" (month); anything else is ignored. */
+    public static function work(Client $client, bool $admin, ?string $period = null)
     {
+        $from = $to = null;
+        if ($period && preg_match('/^\d{4}(-(0[1-9]|1[0-2]))?$/', $period)) {
+            $from = strlen($period) === 4 ? Carbon::create((int) $period, 1, 1) : Carbon::createFromFormat('!Y-m', $period);
+            $to = strlen($period) === 4 ? $from->copy()->addYear() : $from->copy()->addMonth();
+        }
+
         return WorkEntry::whereHas('project', fn ($query) => $query->where('client_id', $client->id))
             ->with('project')
+            ->when($from, fn ($query) => $query->whereRaw('COALESCE(worked_on, created_at) >= ? and COALESCE(worked_on, created_at) < ?', [$from, $to]))
             ->when(! $admin, fn ($query) => $query->where('visible_to_client', true))
             ->orderByDesc('sort_order')
             ->orderByDesc('id');
@@ -56,7 +65,7 @@ class ClientLists
         $page = max(1, $request->integer('page', 1));
 
         if ($type === 'work') {
-            $paginator = self::work($client, $admin)->paginate(self::PER_PAGE, ['*'], 'page', $page);
+            $paginator = self::work($client, $admin, $request->query('period'))->paginate(self::PER_PAGE, ['*'], 'page', $page);
             $data = [
                 'canManage' => $admin,
                 'showProject' => true,

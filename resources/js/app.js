@@ -79,8 +79,18 @@ function barChart(root) {
             el('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--c-label)' }, svg).textContent = r.label;
             const hit = el('rect', { x: m.l + slot * i, y: m.t, width: slot, height: ih + 6, fill: 'transparent', style: 'cursor:pointer' }, svg);
             hit.addEventListener('mouseenter', () => focus(i));
-            hit.addEventListener('click', () => focus(i));
+            hit.addEventListener('click', () => {
+                focus(i);
+                // click again on the chosen bar to clear the filter
+                state.sel = state.sel === r.key ? null : r.key;
+                document.dispatchEvent(new CustomEvent('chart:period', { detail: { key: state.sel, label: r.key && r.key.length === 4 ? r.key : `${r.label} ${(r.key || '').slice(0, 4)}` } }));
+                markSel();
+            });
         });
+
+        function markSel() {
+            bars.forEach((b, j) => b.bar.setAttribute('stroke', rows[j].key === state.sel ? ACCENT : 'none'));
+        }
 
         function focus(i) {
             bars.forEach((b, j) => b.bar.setAttribute('fill', j === i ? 'url(#hot)' : 'url(#stripe)'));
@@ -94,7 +104,13 @@ function barChart(root) {
             tip.style.top = b.y - 12 + 'px';
         }
         focus(Math.max(0, vals.indexOf(Math.max(...vals))));
+        markSel();
     };
+
+    document.addEventListener('chart:period-clear', () => {
+        state.sel = null;
+        draw();
+    });
 
     root.querySelectorAll('[data-range] button').forEach((b) =>
         b.addEventListener('click', () => {

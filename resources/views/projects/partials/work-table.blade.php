@@ -10,7 +10,15 @@
     <div class="border-b border-slate-100 p-5">
         <div class="flex flex-col gap-3">
             <div>
-                <h2 class="text-lg font-semibold">Poslovi</h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="text-lg font-semibold">Poslovi</h2>
+                    @if($moreUrl)
+                        <button type="button" data-period-chip class="btn btn-soft hidden !h-7 !px-2.5 text-xs" title="Prikaži sve poslove">
+                            <span data-period-label></span>
+                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                        </button>
+                    @endif
+                </div>
                 @if($canManage)<p class="text-xs text-slate-500">Klikni kvadratić, pa Shift + klik za opseg.</p>@endif
             </div>
             @if($invoiceClient)
@@ -19,7 +27,7 @@
                     <input name="paid_on" type="date" value="{{ now()->format('Y-m-d') }}" class="field h-10 min-w-[9rem] flex-1 px-3 text-sm" required>
                     <input name="reference" placeholder="Referenca računa" class="field h-10 min-w-[9rem] flex-1 px-3 text-sm">
                     <input name="note" placeholder="Napomena" class="field h-10 min-w-[9rem] flex-1 px-3 text-sm">
-                    <button class="btn border-amber-500 bg-amber-500 text-white hover:border-amber-600 hover:bg-amber-600">Fakturiši izabrane</button>
+                    <button class="btn btn-amber">Fakturiši izabrane</button>
                 </form>
             @endif
         </div>
@@ -60,8 +68,8 @@
         </table>
     </div>
 
-    @if($moreUrl && $hasMore)
-        <div data-more-wrap class="border-t border-slate-100 p-4 text-center">
+    @if($moreUrl)
+        <div data-more-wrap class="border-t border-slate-100 p-4 text-center {{ $hasMore ? '' : 'hidden' }}">
             <button type="button" class="btn" data-load-more data-url="{{ $moreUrl }}" data-type="work" data-page="2" data-rows="#work-entry-sortable" data-cards="#work-cards">Učitaj još</button>
         </div>
     @endif
