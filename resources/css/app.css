@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'flatpickr/dist/flatpickr.min.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -380,3 +381,28 @@ div[data-entry-id][data-selected="true"] { background: var(--accent-soft); }
 
 /* smooth theme switch */
 html.theme-anim, html.theme-anim * { transition: background-color .25s, border-color .25s, color .25s !important; }
+
+/* ---------- Date picker (flatpickr) themed with the app tokens ---------- */
+.flatpickr-calendar {
+    font-family: inherit; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line-2); border-radius: 1rem; box-shadow: var(--shadow), 0 18px 40px -12px rgb(0 0 0 / .25);
+    padding: .5rem; width: 18.5rem;
+}
+.flatpickr-calendar::before, .flatpickr-calendar::after { display: none; }
+.flatpickr-innerContainer, .flatpickr-rContainer, .flatpickr-days, .dayContainer { width: 100%; min-width: 0; max-width: none; }
+.flatpickr-months .flatpickr-month, .flatpickr-current-month, .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year { color: var(--ink); fill: var(--ink); font-weight: 600; }
+.flatpickr-monthDropdown-months { background: var(--surface); }
+.flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month { color: var(--muted); fill: var(--muted); border-radius: .6rem; }
+.flatpickr-months .flatpickr-prev-month:hover, .flatpickr-months .flatpickr-next-month:hover { background: var(--surface-2); }
+.flatpickr-months .flatpickr-prev-month:hover svg, .flatpickr-months .flatpickr-next-month:hover svg { fill: var(--accent); }
+span.flatpickr-weekday { color: var(--muted); font-weight: 500; font-size: .75rem; }
+.flatpickr-day { color: var(--ink); border-radius: .7rem; border: 0; max-width: none; height: 2.3rem; line-height: 2.3rem; }
+.flatpickr-day:hover, .flatpickr-day:focus { background: var(--surface-2); }
+.flatpickr-day.today { box-shadow: inset 0 0 0 1.5px var(--accent); background: transparent; }
+.flatpickr-day.selected, .flatpickr-day.selected:hover { background: var(--accent); color: #fff; box-shadow: none; }
+.dark .flatpickr-day.selected, .dark .flatpickr-day.selected:hover { color: #04130a; }
+.flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay, .flatpickr-day.flatpickr-disabled { color: var(--muted); opacity: .45; }
+.flatpickr-day.prevMonthDay:hover, .flatpickr-day.nextMonthDay:hover { background: var(--surface-2); }
+.numInputWrapper:hover, .numInputWrapper span:hover { background: transparent; }
+.flatpickr-current-month input.cur-year { font-family: inherit; }

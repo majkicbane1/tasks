@@ -1,4 +1,4 @@
-<x-layouts.app :title="$project->name" active="projects" :eyebrow="$project->client->company_name">
+<x-layouts.app :title="$project->name" active="projects" :crumbs="auth()->user()->isSuperAdmin() ? ['Klijenti' => route('clients.index'), $project->client->company_name => route('clients.show', $project->client)] : ['Projekti' => route('client.projects')]">
     @php($currency = $project->client->currency)
     @if(auth()->user()->isSuperAdmin())
         <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-end">

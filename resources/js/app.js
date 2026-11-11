@@ -1,4 +1,24 @@
+import flatpickr from 'flatpickr';
+import { Serbian } from 'flatpickr/dist/esm/l10n/sr.js';
 import { initBulk } from './bulk.js';
+
+/* ---------- Date picker: shows 31.12.2026., submits Y-m-d ---------- */
+function datePickers(root = document) {
+    root.querySelectorAll('input[type="date"]').forEach((input) => {
+        if (input._flatpickr) return;
+        flatpickr(input, {
+            locale: { ...Serbian, firstDayOfWeek: 1 },
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd.m.Y.',
+            altInputClass: input.className,
+            disableMobile: true,
+            allowInput: false,
+            monthSelectorType: 'dropdown',
+        });
+    });
+}
+
 
 const NS = 'http://www.w3.org/2000/svg';
 const ACCENT = '#2fa862';
@@ -252,6 +272,7 @@ function copyButton(btn) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-copy]').forEach(copyButton);
+    datePickers();
     initBulk();
 
     // theme toggle (light / dark), remembered in localStorage

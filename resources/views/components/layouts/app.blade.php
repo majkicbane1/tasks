@@ -105,7 +105,16 @@
             </header></div>
 
             <div class="px-1">
-                <p class="text-xs font-semibold uppercase tracking-wide text-teal-700">{{ $eyebrow ?? 'Panel' }}</p>
+                @if(!empty($crumbs))
+                    <nav aria-label="Putanja" class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
+                        @foreach($crumbs as $label => $url)
+                            @if(!$loop->first)<svg class="h-3.5 w-3.5 shrink-0 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>@endif
+                            <a href="{{ $url }}" class="font-medium text-slate-500 transition hover:text-teal-700">{{ $label }}</a>
+                        @endforeach
+                    </nav>
+                @else
+                    <p class="text-xs font-semibold uppercase tracking-wide text-teal-700">{{ $eyebrow ?? 'Panel' }}</p>
+                @endif
                 <h1 class="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{{ $title ?? 'Dashboard' }}</h1>
             </div>
 
