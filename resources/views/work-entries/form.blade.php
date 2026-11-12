@@ -19,7 +19,7 @@
 <x-form.section title="Napomene" desc="Detalji koje klijent vidi i interna beleška samo za tebe.">
     <x-form.field label="Detalji za klijenta" :full="true"><textarea name="description" rows="3" class="field w-full px-3.5 py-3">{{ old('description', $entry->description) }}</textarea></x-form.field>
     <x-form.field label="Interna napomena" :full="true" hint="Ne vidi se klijentu."><textarea name="internal_note" rows="2" class="field w-full px-3.5 py-3">{{ old('internal_note', $entry->internal_note) }}</textarea></x-form.field>
-    <x-form.toggle name="visible_to_client" label="Vidi se klijentu" desc="Stavka je prikazana u klijentskom panelu i share pregledu." :checked="old('visible_to_client', $entry->exists ? $entry->visible_to_client : true)" />
+    <x-form.toggle name="visible_to_client" label="Vidi se klijentu" desc="Task je prikazan u klijentskom panelu i share pregledu." :checked="old('visible_to_client', $entry->exists ? $entry->visible_to_client : true)" />
 </x-form.section>
 
 <x-form.actions :back="route('projects.show', $project)" />

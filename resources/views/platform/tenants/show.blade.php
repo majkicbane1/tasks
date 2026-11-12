@@ -115,7 +115,7 @@
 
             <section class="card border-rose-200 p-5">
                 <h2 class="text-base font-semibold text-rose-700">Brisanje firme</h2>
-                <p class="mt-1 text-sm text-slate-500">Briše firmu i sve u njoj: klijente, projekte, stavke, uplate, odmor i naloge. Ne može da se vrati.</p>
+                <p class="mt-1 text-sm text-slate-500">Briše firmu i sve u njoj: klijente, projekte, taskove, uplate, odmor i naloge. Ne može da se vrati.</p>
                 <form method="POST" action="{{ route('platform.tenants.destroy', $tenant) }}" class="mt-4 space-y-3" onsubmit="return confirm('Trajno obrisati firmu i sve njene podatke?')">
                     @csrf
                     @method('DELETE')

@@ -104,14 +104,14 @@ function bulkScope(scope) {
         ids.forEach((id) => scope.querySelectorAll(`[data-date-cell="${id}"]`).forEach((c) => (c.textContent = data.date)));
         sel.clear();
         render();
-        toast(`Datum promenjen za ${data.updated} stavki (${data.date})`);
+        toast(`Datum promenjen za ${data.updated} taskova (${data.date})`);
     });
 
     // change the status marker (Otvoreno / Fakturisano / Plaćeno) of the selected entries
     bar.querySelector('[data-bulk-apply-state]').addEventListener('click', async (e) => {
         const state = bar.querySelector('[data-bulk-state]').value;
         const ids = [...sel];
-        if (!confirm(`Postaviti status "${STATE_LABEL[state]}" za ${ids.length} stavki?\n\nMenja se samo oznaka na stavci, računi i dugovanje se ne menjaju.`)) return;
+        if (!confirm(`Postaviti status "${STATE_LABEL[state]}" za ${ids.length} taskova?\n\nMenja se samo oznaka na tasku, računi i dugovanje se ne menjaju.`)) return;
         const data = await send('PATCH', scope.dataset.bulkUrl, { ids, state }, e.currentTarget);
         if (!data) return;
         ids.forEach((id) =>
@@ -121,19 +121,19 @@ function bulkScope(scope) {
         );
         sel.clear();
         render();
-        toast(`Status „${STATE_LABEL[state]}“ postavljen za ${data.updated} stavki`);
+        toast(`Status „${STATE_LABEL[state]}“ postavljen za ${data.updated} taskova`);
     });
 
     // delete the selected entries
     bar.querySelector('[data-bulk-delete]').addEventListener('click', async (e) => {
         const ids = [...sel];
-        if (!ids.length || !confirm(`Obrisati izabrane stavke (${ids.length})? Ovo se ne može vratiti.`)) return;
+        if (!ids.length || !confirm(`Obrisati izabrane taskove (${ids.length})? Ovo se ne može vratiti.`)) return;
         const data = await send('DELETE', e.currentTarget.dataset.deleteUrl, { ids }, e.currentTarget);
         if (!data) return;
         ids.forEach((id) => scope.querySelectorAll(`[data-entry-id="${id}"]`).forEach((row) => row.remove()));
         sel.clear();
         render();
-        toast(`Obrisano stavki: ${data.deleted}. Osvežavam…`);
+        toast(`Obrisano taskova: ${data.deleted}. Osvežavam…`);
         // totals, chart and balances are rendered by the server, so reload to keep them correct
         setTimeout(() => window.location.reload(), 900);
     });
@@ -145,7 +145,7 @@ function bulkScope(scope) {
         const ids = [...sel].filter((id) => scope.querySelector(`[data-bulk-item][value="${id}"][data-invoiceable="1"]`));
         if (!ids.length) {
             e.preventDefault();
-            return toast('Izaberi stavke koje još nisu fakturisane.', true);
+            return toast('Izaberi taskove koje još nisu fakturisane.', true);
         }
         ids.forEach((id) => form.insertAdjacentHTML('beforeend', `<input type="hidden" data-gen name="work_entry_ids[]" value="${id}">`));
     });

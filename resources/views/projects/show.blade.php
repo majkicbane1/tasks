@@ -2,10 +2,10 @@
     @php($currency = $project->client->currency)
     @if(auth()->user()->isSuperAdmin())
         <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <a href="{{ route('work-entries.create', ['project_id' => $project->id]) }}" class="btn btn-primary">+ Stavka posla</a>
+            <a href="{{ route('work-entries.create', ['project_id' => $project->id]) }}" class="btn btn-primary">+ Task</a>
             <a href="{{ route('payments.create', ['client_id' => $project->client_id]) }}" class="btn">+ Uplata</a>
             <a href="{{ route('projects.edit', $project) }}" class="btn">Izmeni projekat</a>
-            <form method="POST" action="{{ route('projects.destroy', $project) }}" onsubmit="return confirm('Obrisati projekat i sve njegove stavke?')">
+            <form method="POST" action="{{ route('projects.destroy', $project) }}" onsubmit="return confirm('Obrisati projekat i sve njegove taskove?')">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-danger w-full sm:w-auto">Obrisi projekat</button>

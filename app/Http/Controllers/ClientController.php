@@ -179,7 +179,7 @@ class ClientController extends Controller
             ->get();
 
         if ($entries->isEmpty()) {
-            return back()->with('error', 'Nema izabranih nefakturisanih stavki.');
+            return back()->with('error', 'Nema izabranih nefakturisanih taskova.');
         }
 
         DB::transaction(function () use ($client, $data, $entries) {
@@ -190,7 +190,7 @@ class ClientController extends Controller
                 'amount' => $entries->sum('amount'),
                 'type' => 'payment',
                 'status' => 'pending_invoice',
-                'reference' => $data['reference'] ?: 'Racun za '.count($entries).' stavki',
+                'reference' => $data['reference'] ?: 'Racun za '.count($entries).' taskova',
                 'note' => $data['note'] ?? null,
                 'visible_to_client' => true,
             ]);
@@ -202,7 +202,7 @@ class ClientController extends Controller
             ]);
         });
 
-        return redirect()->route('clients.show', $client)->with('status', 'Racun je kreiran za izabrane stavke.');
+        return redirect()->route('clients.show', $client)->with('status', 'Racun je kreiran za izabrane taskove.');
     }
 
     public function share(Request $request, Client $client)

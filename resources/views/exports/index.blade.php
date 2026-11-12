@@ -41,5 +41,5 @@
         @endforeach
     </div>
 
-    <p class="px-1 text-sm text-slate-500">Fakture i uplate obuhvataju i plaćene i neplaćene račune. Taskovi sadrže ID povezane fakture/uplate. Izvoz uključuje interne napomene i skrivene stavke. Korisnički nalozi se izvoze bez lozinki i pristupnih tokena.</p>
+    <p class="px-1 text-sm text-slate-500">Fakture i uplate obuhvataju i plaćene i neplaćene račune. Taskovi sadrže ID povezane fakture/uplate. Izvoz uključuje interne napomene i skrivene taskove. Korisnički nalozi se izvoze bez lozinki i pristupnih tokena.</p>
 </x-layouts.app>

@@ -68,6 +68,7 @@
                 <nav class="space-y-1">
                     <a href="{{ route('clients.create') }}" class="nav-link"><span class="grid h-5 w-5 place-items-center text-lg leading-none">+</span> Novi klijent</a>
                     <a href="{{ route('projects.create') }}" class="nav-link"><span class="grid h-5 w-5 place-items-center text-lg leading-none">+</span> Novi projekat</a>
+                    <a href="{{ route('work-entries.create') }}" class="nav-link"><span class="grid h-5 w-5 place-items-center text-lg leading-none">+</span> Novi task</a>
                     <a href="{{ route('payments.create') }}" class="nav-link"><span class="grid h-5 w-5 place-items-center text-lg leading-none">+</span> Nova uplata</a>
                 </nav>
             @endif

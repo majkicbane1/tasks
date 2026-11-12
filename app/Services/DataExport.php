@@ -17,7 +17,7 @@ class DataExport
     public const TYPES = [
         'clients' => 'Klijenti',
         'projects' => 'Projekti',
-        'tasks' => 'Taskovi / stavke posla',
+        'tasks' => 'Taskovi',
         'invoices' => 'Fakture i uplate',
         'expenses' => 'Troškovi',
         'users' => 'Korisnički nalozi',

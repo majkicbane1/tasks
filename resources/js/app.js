@@ -49,7 +49,7 @@ function barChart(root) {
     const stage = root.querySelector('[data-stage]');
     const totalEl = root.querySelector('[data-total]');
     // data-unit switches the chart from money to plain counts (used on client facing pages)
-    // data-units='{"work":"stavki","paid":"uplata"}' gives each tab its own unit
+    // data-units='{"work":"taskova","paid":"uplata"}' gives each tab its own unit
     const units = root.dataset.units ? JSON.parse(root.dataset.units) : null;
     const unitOf = () => (units ? units[state.metric] : root.dataset.unit) || null;
     const tip = document.createElement('div');

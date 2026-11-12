@@ -9,7 +9,7 @@
         <a href="{{ route('projects.create', ['client_id' => $client->id]) }}" class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Projekat</a>
         <span class="mx-1 hidden h-6 w-px bg-slate-200 sm:block"></span>
         <a href="{{ route('clients.edit', $client) }}" class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Izmeni</a>
-        <form method="POST" action="{{ route('clients.destroy', $client) }}" onsubmit="return confirm('Obrisati klijenta i sve njegove projekte, stavke i uplate?')">
+        <form method="POST" action="{{ route('clients.destroy', $client) }}" onsubmit="return confirm('Obrisati klijenta i sve njegove projekte, taskove i uplate?')">
             @csrf
             @method('DELETE')
             <button class="btn btn-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg> Obriši</button>
@@ -49,6 +49,13 @@
         @include('partials.stat-card', ['label' => 'Plaćeno', 'value' => $money($client->total_payments, $cur), 'spark' => $spark('paid'), 'color' => '#3b8fd9', 'hint' => 'Naplaćene uplate', 'icon' => '<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/>'])
         @include('partials.stat-card', ['label' => 'Preostalo', 'value' => $money($client->balance, $cur), 'color' => '#d6455d', 'hint' => 'Za uplatu', 'icon' => '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'])
     </div>
+    @php $projects = $client->projects()->latest()->get(); @endphp
+    <div class="tabs" role="tablist" data-client-tabs>
+        <button type="button" role="tab" data-tab="overview" class="tab on" aria-selected="true">Pregled</button>
+        <button type="button" role="tab" data-tab="projects" class="tab" aria-selected="false">Projekti <span class="count">{{ $projects->count() }}</span></button>
+    </div>
+
+    <div data-panel="overview" class="space-y-5">
     @include('partials.insights', ['series' => $series, 'currency' => $cur, 'paid' => $client->total_payments, 'billed' => $billed])
 
     <div class="grid grid-cols-1 items-start gap-5 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -59,5 +66,54 @@
             @include('projects.partials.payments-table', ['payments' => $payments, 'readonly' => false, 'currency' => $client->currency, 'moreUrl' => $moreUrl, 'hasMore' => $paymentsHasMore])
         </div>
     </div>
+    </div>
+
+    <div data-panel="projects" class="hidden">
+    <section class="card overflow-hidden">
+        <div class="flex items-center justify-between gap-3 border-b border-slate-100 p-5">
+            <h2 class="text-lg font-semibold">Projekti <span class="ml-1 text-sm font-normal text-slate-500">{{ $projects->count() }}</span></h2>
+            <a href="{{ route('projects.create', ['client_id' => $client->id]) }}" class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Novi projekat</a>
+        </div>
+        <div>
+        @forelse($projects as $project)
+            @php
+                $st = ['active' => ['Aktivan', 'pill-green'], 'paused' => ['Pauziran', 'pill-amber'], 'completed' => ['Završen', 'pill-gray']][$project->status] ?? [ucfirst($project->status), 'pill-gray'];
+                $pBalance = $project->balance;
+            @endphp
+            <div class="flex flex-wrap items-center gap-3 border-b border-slate-100 px-5 py-3.5 last:border-b-0 hover:bg-slate-50/80">
+                <a href="{{ route('projects.show', $project) }}" class="flex min-w-0 flex-1 basis-56 items-center gap-3.5">
+                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-600"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg></span>
+                    <span class="min-w-0 truncate font-semibold">{{ $project->name }}</span>
+                </a>
+                <span class="pill {{ $st[1] }}">{{ $st[0] }}</span>
+                <div class="w-32 text-right font-semibold {{ $pBalance > 0 ? 'text-rose-700' : 'text-emerald-700' }}" title="Preostalo">{{ $money($pBalance, $cur) }}</div>
+                <div class="flex gap-2">
+                    <a href="{{ route('work-entries.create', ['project_id' => $project->id]) }}" class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Task</a>
+                    <a href="{{ route('projects.show', $project) }}" class="btn">Otvori</a>
+                </div>
+            </div>
+        @empty
+            <p class="p-5 text-sm text-slate-500">Klijent još nema projekata.</p>
+        @endforelse
+        </div>
+    </section>
+
+    </div>
+
+    <script>
+        (() => {
+            const bar = document.querySelector('[data-client-tabs]');
+            const tabs = [...bar.querySelectorAll('[data-tab]')];
+            const panels = [...document.querySelectorAll('[data-panel]')];
+            const show = (name) => {
+                if (!tabs.some((t) => t.dataset.tab === name)) name = 'overview';
+                tabs.forEach((t) => { const on = t.dataset.tab === name; t.classList.toggle('on', on); t.setAttribute('aria-selected', on); });
+                panels.forEach((p) => p.classList.toggle('hidden', p.dataset.panel !== name));
+                if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name);
+            };
+            tabs.forEach((t) => t.addEventListener('click', () => show(t.dataset.tab)));
+            show(location.hash.slice(1));
+        })();
+    </script>
 
 </x-layouts.app>

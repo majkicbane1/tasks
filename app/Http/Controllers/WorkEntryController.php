@@ -17,6 +17,12 @@ class WorkEntryController extends Controller
 
     public function create(Request $request)
     {
+        if (! $request->filled('project_id')) {
+            return view('work-entries.pick-project', [
+                'projects' => Project::with('client')->get()->sortBy(fn ($p) => mb_strtolower($p->client->company_name.' '.$p->name))->groupBy('client_id'),
+            ]);
+        }
+
         $project = Project::with('client')->findOrFail($request->integer('project_id'));
 
         return view('work-entries.create', ['entry' => new WorkEntry(), 'project' => $project]);
@@ -31,7 +37,7 @@ class WorkEntryController extends Controller
 
         $entry = WorkEntry::create($data);
 
-        return redirect()->route('projects.show', $entry->project)->with('status', 'Stavka je dodata.');
+        return redirect()->route('projects.show', $entry->project)->with('status', 'Task je dodat.');
     }
 
     public function show(string $id)
@@ -50,7 +56,7 @@ class WorkEntryController extends Controller
         $project = Project::with('client')->findOrFail($data['project_id']);
         $workEntry->update($this->withCalculatedAmount($data, $project));
 
-        return redirect()->route('projects.show', $workEntry->project)->with('status', 'Stavka je sačuvana.');
+        return redirect()->route('projects.show', $workEntry->project)->with('status', 'Task je sačuvan.');
     }
 
     public function destroy(WorkEntry $workEntry)
@@ -58,7 +64,7 @@ class WorkEntryController extends Controller
         $project = $workEntry->project;
         $workEntry->delete();
 
-        return redirect()->route('projects.show', $project)->with('status', 'Stavka je obrisana.');
+        return redirect()->route('projects.show', $project)->with('status', 'Task je obrisan.');
     }
 
     public function reorder(Request $request)

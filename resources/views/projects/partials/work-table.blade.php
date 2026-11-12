@@ -90,7 +90,7 @@
                 <button type="button" data-bulk-apply class="btn">Datum</button>
             </div>
 
-            <div class="flex min-w-0 flex-1 basis-56 items-center gap-2" title="Menja samo oznaku na stavci. Ne pravi račune i ne menja dugovanje.">
+            <div class="flex min-w-0 flex-1 basis-56 items-center gap-2" title="Menja samo oznaku na tasku. Ne pravi račune i ne menja dugovanje.">
                 <select data-bulk-state aria-label="Novi status" class="field h-10 min-w-0 flex-1 px-3 text-sm">
                     <option value="open">Otvoreno</option>
                     <option value="invoiced">Fakturisano</option>
